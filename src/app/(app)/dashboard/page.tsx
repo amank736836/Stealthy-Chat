@@ -1,6 +1,6 @@
 "use client";
 
-import { Message } from "@/backend/model/User";
+import { Message } from "@/backend/model/user.model";
 import { acceptMessageSchema } from "@/backend/schemas/acceptMessageSchema";
 import MessageCard from "@/components/MessageCard";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,7 @@ function Dashboard() {
           axiosError.response?.data.message ||
           "Failed to fetch message settings",
         variant: "destructive",
+        duration: 1000,
       });
     } finally {
       setIsSwitchLoading(false);
@@ -76,6 +77,7 @@ function Dashboard() {
         description:
           axiosError.response?.data.message || "Failed to fetch messages",
         variant: "destructive",
+        duration: 1000,
       });
     } finally {
       setIsLoading(false);
@@ -92,6 +94,8 @@ function Dashboard() {
       toast({
         title: response.data.message || "Accept messages updated",
         description: "Your accept messages settings have been updated",
+        variant: "default",
+        duration: 1000,
       });
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
@@ -102,6 +106,7 @@ function Dashboard() {
           axiosError.response?.data.message ||
           "Failed to update message settings",
         variant: "destructive",
+        duration: 1000,
       });
     } finally {
       setIsSwitchLoading(false);
@@ -126,6 +131,8 @@ function Dashboard() {
     toast({
       title: "Profile URL copied",
       description: "Your profile URL has been copied to your clipboard",
+      variant: "default",
+      duration: 1000,
     });
   };
 
