@@ -1,6 +1,6 @@
 import { sendForgotPasswordEmail } from "@/backend/helpers/sendForgotPasswordEmail";
 import dbConnect from "@/backend/lib/dbConnect";
-import UserModel from "@/backend/model/User";
+import UserModel from "@/backend/model/user.model";
 
 export async function POST(request: Request) {
   const { identifier } = await request.json();
