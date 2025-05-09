@@ -1,14 +1,9 @@
 import { auth } from "@/app/api/auth/[...nextauth]/option";
 import dbConnect from "@/backend/lib/dbConnect";
-import UserModel from "@/backend/model/User";
+import MessageModel from "@/backend/model/message.model";
 import { AuthError, User } from "next-auth";
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ messageId: string }> }
-) {
-  const { messageId } = await params;
-
+export async function DELETE(request: Request) {
   const session = await auth();
 
   if (!session) {
@@ -37,20 +32,26 @@ export async function DELETE(
     );
   }
 
+  const { messageId } = await request.json();
+
+  if (!messageId) {
+    return Response.json(
+      {
+        success: false,
+        message: "Message ID is required",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
   await dbConnect();
 
   try {
-    const updatedResult = await UserModel.updateOne(
-      {
-        _id: user._id,
-      },
-      {
-        $pull: {
-          messages: {
-            _id: messageId,
-          },
-        },
-      }
+    const updatedResult = await MessageModel.updateOne(
+      { _id: messageId },
+      { $set: { deleted: true } }
     );
 
     if (updatedResult.modifiedCount === 0) {
