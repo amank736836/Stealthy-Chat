@@ -5,7 +5,7 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET,
-    cookieName: "__Secure-authjs.session-token",
+    cookieName: "authjs.session-token",
   });
 
   const pathname = req.nextUrl.pathname;
@@ -14,12 +14,17 @@ export async function middleware(req: NextRequest) {
     token &&
     pathname !== "/dashboard" &&
     pathname === `/u/${token.username}` &&
+    !pathname.startsWith("/api/auth") &&
     !pathname.startsWith("/api/accept-messages") &&
     !pathname.startsWith("/api/get-messages") &&
-    !pathname.startsWith("/api/delete-message") &&
-    !pathname.startsWith("/api/auth") &&
     !pathname.startsWith("/api/send-message") &&
-    !pathname.startsWith("/api/suggest-messages")
+    !pathname.startsWith("/api/delete-message") &&
+    !pathname.startsWith("/api/suggest-messages") &&
+    !pathname.startsWith("/api/search") &&
+    !pathname.startsWith("/api/friends") &&
+    !pathname.startsWith("/api/notifications") &&
+    !pathname.startsWith("/api/accept-request") &&
+    !pathname.startsWith("/send-friend-request")
   ) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
@@ -41,7 +46,12 @@ export async function middleware(req: NextRequest) {
     !pathname.startsWith("/api/verifyCode") &&
     !pathname.startsWith("/api/send-message") &&
     !pathname.startsWith("/api/suggest-messages") &&
-    !pathname.startsWith("/api/auth/session")
+    !pathname.startsWith("/api/auth/session") &&
+    !pathname.startsWith("/api/search") &&
+    !pathname.startsWith("/api/friends") &&
+    !pathname.startsWith("/api/notifications") &&
+    !pathname.startsWith("/api/accept-request") &&
+    !pathname.startsWith("/send-friend-request")
   ) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
