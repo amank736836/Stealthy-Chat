@@ -1,6 +1,6 @@
 import { sendVerificationEmail } from "@/backend/helpers/sendVerificationEmail";
 import dbConnect from "@/backend/lib/dbConnect";
-import UserModel from "@/backend/model/User";
+import UserModel from "@/backend/model/user.model";
 
 export async function POST(request: Request) {
   const { identifier, verifyCode } = await request.json();
