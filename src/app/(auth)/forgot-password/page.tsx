@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
@@ -31,6 +31,7 @@ function ForgotPassword({
 }) {
   const { data: session } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (session && session.user) {
@@ -70,6 +71,8 @@ function ForgotPassword({
         title: "Success",
         description:
           response.data.message || "Forgot password Code sent successfully",
+        variant: "default",
+        duration: 1000,
       });
 
       router.replace(`/verify-forgot-password?identifier=${data.identifier}`);
@@ -86,6 +89,7 @@ function ForgotPassword({
         title: "Forgot Password Code Not Sent",
         description: errorMessage,
         variant: "destructive",
+        duration: 1000,
       });
 
       if (
