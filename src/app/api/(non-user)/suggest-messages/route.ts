@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { exclude } = await req.json();
+    const { exclude } = await request.json();
 
     console.log("Excluding:", exclude);
 
