@@ -1,5 +1,5 @@
 import dbConnect from "@/backend/lib/dbConnect";
-import UserModel from "@/backend/model/User";
+import UserModel from "@/backend/model/user.model";
 import { usernameValidation } from "@/backend/schemas/signUpSchema";
 import { z } from "zod";
 
