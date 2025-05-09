@@ -11,13 +11,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Suspense, use, useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -30,6 +30,7 @@ function SignIn({
 }) {
   const { data: session } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (session && session.user) {
@@ -76,6 +77,7 @@ function SignIn({
             ? "Invalid username or password"
             : "Check Verify or Credentials",
         variant: "destructive",
+        duration: 1000,
       });
     } else if (result?.url) {
       router.replace("/dashboard");
