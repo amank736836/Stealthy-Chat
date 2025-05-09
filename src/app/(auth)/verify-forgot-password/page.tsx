@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
@@ -31,6 +31,7 @@ function VerifyForgotPassword({
 }) {
   const { data: session } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (session && session.user) {
@@ -98,6 +99,8 @@ function VerifyForgotPassword({
       toast({
         title: "Success",
         description: response.data.message || "Password reset successfully",
+        variant: "default",
+        duration: 1000,
       });
 
       router.replace(`/sign-in?identifier=${data.identifier}`);
@@ -114,6 +117,7 @@ function VerifyForgotPassword({
         title: "Password Reset Failed",
         description: errorMessage,
         variant: "destructive",
+        duration: 1000,
       });
 
       if (
