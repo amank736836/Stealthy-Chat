@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Message } from "@/backend/model/User";
+import { Message } from "@/backend/model/user.model";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,12 +46,15 @@ function MessageCard({ message, onMessageDelete }: MessageCardProps) {
         toast({
           title: "Message deleted successfully",
           description: "Your message has been deleted successfully",
+          variant: "default",
+          duration: 1000,
         });
       } else {
         toast({
           title: "Error deleting message",
           description: response.data.message,
           variant: "destructive",
+          duration: 1000,
         });
       }
     } catch (error) {
@@ -62,6 +65,7 @@ function MessageCard({ message, onMessageDelete }: MessageCardProps) {
           axiosError.response?.data.message ??
           `An error occurred while deleting the message, ${error}`,
         variant: "destructive",
+        duration: 1000,
       });
     }
   };
