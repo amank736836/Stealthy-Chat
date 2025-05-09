@@ -25,9 +25,24 @@ export const passwordValidation = z
       "Password must contain only letters, numbers, and the following special characters: @, #, $, &",
   });
 
-export const signUpSchema = z.object({
-  username: usernameValidation,
-  email: emailValidation,
-  password: passwordValidation,
-  confirmPassword: passwordValidation,
-});
+export const nameValidation = z
+  .string()
+  .min(3, { message: "Name must be at least 3 characters long" })
+  .max(30, { message: "Name must be at most 30 characters long" })
+  .regex(/^[a-zA-Z0-9 ]*$/, {
+    message: "Name must contain only letters, numbers, and spaces",
+  });
+
+export const signUpSchema = z
+  .object({
+    avatar: z.any(),
+    name: nameValidation,
+    username: usernameValidation,
+    email: emailValidation,
+    password: passwordValidation,
+    confirmPassword: passwordValidation,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
