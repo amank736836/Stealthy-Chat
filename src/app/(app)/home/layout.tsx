@@ -19,6 +19,7 @@ import Header from "@/components/layout/Header";
 import { getSockets } from "@/backend/lib/socket";
 import { useGetMyChatsQuery } from "@/lib/store/api";
 import { useErrors } from "@/hooks/hook";
+import { useSocketEvents } from "6pp";
 
 
 const ChatList = lazy(() => import("@/components/specific/ChatList"));
