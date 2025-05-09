@@ -47,7 +47,8 @@ const AppLayout = () => (WrappedComponent) => {
         const chatId = params.chatId || null;
         const deleteOptionAnchor = useRef<HTMLElement | null>(null);
 
-        const socket = getSockets();
+        const sockets = getSockets();
+        const socket = Array.isArray(sockets) ? sockets[0] : sockets;
 
         const {
             data: chatsData,
