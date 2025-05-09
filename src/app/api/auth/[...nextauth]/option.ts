@@ -1,6 +1,6 @@
 import { sendVerificationEmail } from "@/backend/helpers/sendVerificationEmail";
 import dbConnect from "@/backend/lib/dbConnect";
-import UserModel from "@/backend/model/User";
+import UserModel from "@/backend/model/user.model";
 import bcrypt from "bcryptjs";
 import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
@@ -47,7 +47,7 @@ const authOptions: NextAuthConfig = {
               { email: credentials.identifier },
               { username: credentials.identifier },
             ],
-          });
+          }).select("+password");
 
           const baseUrl = credentials.baseUrl as string;
 
@@ -105,9 +105,11 @@ const authOptions: NextAuthConfig = {
 
           return {
             _id: user._id,
+            username: user.username,
+            email: user.email,
+            avatar: user.avatar,
             isVerified: user.isVerified,
             isAcceptingMessages: user.isAcceptingMessage,
-            username: user.username,
           };
         } catch (error) {
           throw new Error(`Error in authorize: ${error}`);
@@ -119,9 +121,11 @@ const authOptions: NextAuthConfig = {
     async jwt({ token, user }) {
       if (user) {
         token._id = user._id.toString();
+        token.username = user.username;
+        token.email = user.email;
+        token.avatar = user.avatar;
         token.isVerified = user.isVerified;
         token.isAcceptingMessages = user.isAcceptingMessages;
-        token.username = user.username;
       }
 
       return token;
@@ -145,7 +149,7 @@ const authOptions: NextAuthConfig = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 2 * 24 * 60 * 60,
   },
   secret: process.env.AUTH_SECRET,
 };
