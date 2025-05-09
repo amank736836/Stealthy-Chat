@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
@@ -32,6 +32,7 @@ function VerifyAccount({
 }) {
   const { data: session } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (session && session.user) {
@@ -76,6 +77,8 @@ function VerifyAccount({
       toast({
         title: "Success",
         description: response.data.message || "User verified successfully",
+        variant: "default",
+        duration: 1000,
       });
 
       router.replace(`/sign-in?identifier=${data.identifier}`);
@@ -92,12 +95,15 @@ function VerifyAccount({
         title: "Verification Failed",
         description: errorMessage,
         variant: "destructive",
+        duration: 1000,
       });
 
       if (errorMessage === "User is already verified") {
         toast({
           title: "Already Verified",
           description: "Redirecting to login...",
+          variant: "default",
+          duration: 1000,
         });
         setTimeout(() => {
           router.replace(`/sign-in?identifier=${data.identifier}`);
