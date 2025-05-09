@@ -23,6 +23,10 @@ export const metadata: Metadata = {
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/context/AuthProvider";
 import { ThemeProvider } from "next-themes";
+import { Provider } from "react-redux";
+import StoreProvider from "./StoreProvider";
+
+
 
 export default function RootLayout({
   children,
@@ -38,12 +42,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-black dark:text-white`}
       >
+
         <AuthProvider>
-          <ThemeProvider attribute="class">
-            <Navbar />
-            {children}
-            <Toaster />
-          </ThemeProvider>
+          <StoreProvider>
+
+            <ThemeProvider attribute="class">
+              <Navbar />
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </StoreProvider>
         </AuthProvider>
 
         <Analytics />
