@@ -21,8 +21,8 @@ import { useGetMyChatsQuery } from "@/lib/store/api";
 import { useErrors } from "@/hooks/hook";
 
 
-const ChatList = lazy(() => import("../../specific/ChatList"));
-const Profile = lazy(() => import("../../specific/Profile"));
+const ChatList = lazy(() => import("@/components/specific/ChatList"));
+const Profile = lazy(() => import("@/components/specific/Profile"));
 
 const AppLayout = () => (WrappedComponent) => {
 
