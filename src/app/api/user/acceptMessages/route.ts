@@ -2,7 +2,8 @@ import dbConnect from "@/backend/lib/dbConnect";
 import { User } from "next-auth";
 
 import { auth } from "@/app/api/auth/[...nextauth]/option";
-import UserModel from "@/backend/model/User";
+import UserModel from "@/backend/model/user.model";
+import { Types } from "mongoose";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -33,9 +34,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const userId = user._id;
+  const ReqUserId = new Types.ObjectId(user.id);
 
-  if (!userId) {
+  if (!ReqUserId) {
     return Response.json(
       {
         success: false,
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
 
   try {
     const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
+      ReqUserId,
       {
         isAcceptingMessage,
       },
@@ -128,10 +129,10 @@ export async function GET() {
 
   const user: User = session?.user as User;
 
-  const userId = user._id;
+  const ReqUserId = user._id;
 
   try {
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(ReqUserId);
 
     if (!user) {
       return Response.json(
