@@ -1,5 +1,7 @@
 import dbConnect from "@/backend/lib/dbConnect";
-import UserModel, { Message, User } from "@/backend/model/User";
+import ChatModel from "@/backend/model/chat.model";
+import MessageModel from "@/backend/model/message.model";
+import UserModel, { User } from "@/backend/model/user.model";
 
 export async function POST(request: Request) {
   const { username, content } = await request.json();
@@ -55,7 +57,25 @@ export async function POST(request: Request) {
 
     const newMessage = { content, createdAt: new Date() };
 
-    user.messages.push(newMessage as Message);
+    const chat = await ChatModel.findOne({
+      _id: user._id,
+    });
+
+    if (!chat) {
+      return Response.json(
+        {
+          success: false,
+          message: "Chat not found",
+        },
+        { status: 404 }
+      );
+    }
+
+    const message = await MessageModel.create({
+      sender: user._id,
+      chat: chat._id,
+      content,
+    });
 
     await user.save();
 
