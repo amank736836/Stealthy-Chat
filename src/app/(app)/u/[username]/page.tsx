@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
@@ -35,6 +35,7 @@ const initialMessageString =
 export default function SendMessage() {
   const params = useParams<{ username: string }>();
   const username = params.username;
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
@@ -63,10 +64,11 @@ export default function SendMessage() {
       }
 
       toast({
-        title: response.data.success
-          ? response.data.message || "Message sent"
-          : "Error sending message",
+        title: "Message sent",
+        description: response.data.message || "Please try again",
         variant: response.data.success ? "default" : "destructive",
+        duration: 1000,
+
       });
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
@@ -75,6 +77,7 @@ export default function SendMessage() {
         description:
           axiosError.response?.data.message ?? `An error occurred: ${error}`,
         variant: "destructive",
+        duration: 1000,
       });
     } finally {
       setIsLoading(false);
@@ -102,6 +105,7 @@ export default function SendMessage() {
           title: "Error fetching suggested messages",
           description: response.data.message,
           variant: "destructive",
+          duration: 1000,
         });
       }
     } catch (error) {
