@@ -1,5 +1,6 @@
 import { useInputValidation } from "6pp";
-import { useAsyncMutation, useErrors } from "@/hooks/hook";
+import { dialogBg } from "@/app/constants/color";
+import { useToast } from "@/hooks/use-toast";
 import { useLazySearchUserQuery, useSendFriendRequestMutation } from "@/lib/store/api";
 import { setIsSearch } from "@/lib/store/misc.reducer";
 import { Search as SearchIcon } from "@mui/icons-material";
@@ -12,11 +13,10 @@ import {
   Skeleton,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserItem from "../shared/UserItem";
-import { dialogBg } from "@/app/constants/color";
-import { useToast } from "@/hooks/use-toast";
+import useErrors from "@/hooks/hook";
 
 const Search = () => {
   const { isSearch } = useSelector((state) => state.misc);
@@ -57,7 +57,7 @@ const Search = () => {
       isError: sendFriendRequestError,
       error: sendFriendRequestErrorData,
     },
-  ] = useAsyncMutation(useSendFriendRequestMutation);
+  ] = useSendFriendRequestMutation();
 
   useErrors([
     {
@@ -76,10 +76,34 @@ const Search = () => {
 
   const SendFriendRequestHandler: SendFriendRequestHandler = async (userId: string) => {
     if (!userId) return;
-    await sendFriendRequest("Sending friend request...", userId);
+    try {
+      sendFriendRequest(userId).unwrap().then(() => {
+        toast({
+          title: "Success",
+          description: "Friend request sent successfully",
+          variant: "default",
+          duration: 1000,
+        });
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error sending friend request",
+        variant: "destructive",
+        duration: 1000,
+      });
+    }
     setUsers((prev) => prev.filter((user) => user.id !== userId));
     searchUserQuery(searchInputValue.value).then((res) => {
-      const transformedUsers = res.data.users.map(user => ({
+      interface ApiUser {
+        id: string;
+        name?: string;
+        avatar?: string;
+        [key: string]: any;
+      }
+
+      const transformedUsers: User[] = res.data.users.map((user: ApiUser): User => ({
         ...user,
         _id: user.id || '',
         name: user.name || '',
