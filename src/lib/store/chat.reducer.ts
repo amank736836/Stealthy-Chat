@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
 import { NEW_MESSAGE_ALERT } from "@/app/constants/events";
+import { createSlice } from "@reduxjs/toolkit";
 import { getOrSaveFromStorage } from "../features";
 
 interface NewMessageAlert {
@@ -7,7 +7,12 @@ interface NewMessageAlert {
   count: number;
 }
 
-const initialState = {
+interface ChatState {
+  notificationCount: number;
+  newMessagesAlert: NewMessageAlert[];
+}
+
+const initialState: ChatState = {
   notificationCount: 0,
   newMessagesAlert: getOrSaveFromStorage({
     key: NEW_MESSAGE_ALERT,
@@ -34,9 +39,10 @@ const chatSlice = createSlice({
     setNewMessagesAlert: (state, action) => {
       const { chatId } = action.payload;
 
-      const newMessagesAlert: NewMessageAlert | undefined = state.newMessagesAlert.find(
-        (alert: NewMessageAlert) => alert.chatId === chatId
-      );
+      const newMessagesAlert: NewMessageAlert | undefined =
+        state.newMessagesAlert.find(
+          (alert: NewMessageAlert) => alert.chatId === chatId
+        );
       if (newMessagesAlert) {
         newMessagesAlert.count += 1;
       } else {
