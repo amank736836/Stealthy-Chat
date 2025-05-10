@@ -62,7 +62,7 @@ const LineChart = ({ value = [] }) => {
         label: "Messages",
         fill: true,
         backgroundColor: lightPurple,
-        borderColor: purple,
+        borderColor: purple[500],
       },
     ],
   };
@@ -90,8 +90,8 @@ const DoughnutChart = ({ value = [], labels = [] }) => {
       {
         data: value,
         fill: true,
-        borderColor: [purple, orange],
-        hoverBackgroundColor: [purple, orange],
+        borderColor: [purple[500], orange[500]],
+        hoverBackgroundColor: [purple[500], orange[500]],
         backgroundColor: [lightPurple, lightOrange],
         offset: 40,
       },
