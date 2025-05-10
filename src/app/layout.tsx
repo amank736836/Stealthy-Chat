@@ -23,9 +23,7 @@ export const metadata: Metadata = {
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/context/AuthProvider";
 import { ThemeProvider } from "next-themes";
-import StoreProvider from "./StoreProvider";
-
-
+import StoreProvider from "../context/StoreProvider";
 
 export default function RootLayout({
   children,
