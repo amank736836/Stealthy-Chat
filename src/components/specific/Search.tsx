@@ -1,8 +1,11 @@
 import { useInputValidation } from "6pp";
 import { dialogBg } from "@/app/constants/color";
+import { useErrors } from "@/hooks/hook";
+import { useSendFriendRequestMutation } from "@/hooks/mutation";
+import { useSearchUserQuery } from "@/hooks/query";
 import { useToast } from "@/hooks/use-toast";
-import { useLazySearchUserQuery, useSendFriendRequestMutation } from "@/lib/store/api";
 import { setIsSearch } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import { Search as SearchIcon } from "@mui/icons-material";
 import {
   Box,
@@ -16,10 +19,9 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserItem from "../shared/UserItem";
-import useErrors from "@/hooks/hook";
 
 const Search = () => {
-  const { isSearch } = useSelector((state) => state.misc);
+  const { isSearch } = useSelector((state: RootState) => state.misc);
 
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -41,23 +43,22 @@ const Search = () => {
 
   const searchInputValue = useInputValidation("");
 
-  const [
+  const {
     searchUserQuery,
-    {
-      isLoading: isLoadingSearchUser,
-      isError: isErrorSearchUser,
-      error: errorSearchUser,
-    },
-  ] = useLazySearchUserQuery();
+    isLoading: isLoadingSearchUser,
+    isError: isErrorSearchUser,
+    error: errorSearchUser,
+  }
+    = useSearchUserQuery();
 
-  const [
-    sendFriendRequest,
+  const
     {
+      sendFriendRequestMutation,
       isLoading: isLoadingSendFriendRequest,
       isError: sendFriendRequestError,
       error: sendFriendRequestErrorData,
-    },
-  ] = useSendFriendRequestMutation();
+    }
+      = useSendFriendRequestMutation();
 
   useErrors([
     {
@@ -77,13 +78,22 @@ const Search = () => {
   const SendFriendRequestHandler: SendFriendRequestHandler = async (userId: string) => {
     if (!userId) return;
     try {
-      sendFriendRequest(userId).unwrap().then(() => {
-        toast({
-          title: "Success",
-          description: "Friend request sent successfully",
-          variant: "default",
-          duration: 1000,
-        });
+      sendFriendRequestMutation(userId).then((res) => {
+        if (res?.status === 200) {
+          toast({
+            title: "Success",
+            description: "Friend request sent successfully",
+            variant: "default",
+            duration: 1000,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Error sending friend request",
+            variant: "destructive",
+            duration: 1000,
+          });
+        }
       });
     } catch (error) {
       console.error(error);
@@ -103,7 +113,7 @@ const Search = () => {
         [key: string]: any;
       }
 
-      const transformedUsers: User[] = res.data.users.map((user: ApiUser): User => ({
+      const transformedUsers: User[] = res.users.map((user: ApiUser): User => ({
         ...user,
         _id: user.id || '',
         name: user.name || '',
