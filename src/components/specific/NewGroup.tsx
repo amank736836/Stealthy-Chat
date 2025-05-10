@@ -1,7 +1,10 @@
 import { useInputValidation } from "6pp";
+import { useErrors } from "@/hooks/hook";
+import { useNewGroupMutation } from "@/hooks/mutation";
+import { useGetAvailableFriendsQuery } from "@/hooks/query";
 import { useToast } from "@/hooks/use-toast";
-import { useGetAvailableFriendsQuery, useNewGroupMutation } from "@/lib/store/api";
 import { setIsNewGroup } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import {
   Box,
   Button,
@@ -12,11 +15,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserItem from "../shared/UserItem";
-import useErrors from "@/hooks/hook";
-import { RootState } from "@/lib/store/store";
 
 const NewGroup = () => {
   const { isNewGroup } = useSelector((state: RootState) => state.misc);
@@ -34,16 +35,15 @@ const NewGroup = () => {
     isLoading: loadingAvailableFriends,
     isError: errorAvailableFriends,
     error: errorAvailableFriendsMessage,
-  } = useGetAvailableFriendsQuery("");
+  } = useGetAvailableFriendsQuery();
 
-  const [
-    newGroup,
+  const
     {
+      newGroupMutation,
       isLoading: loadingNewGroup,
       isError: errorNewGroup,
       error: errorNewGroupMessage,
-    },
-  ] = useNewGroupMutation();
+    } = useNewGroupMutation();
 
   useErrors([
     {
@@ -77,18 +77,26 @@ const NewGroup = () => {
     }
 
     try {
-      newGroup({
+      newGroupMutation({
         name: groupName.value,
         members: selectedMembers,
       })
-        .unwrap()
-        .then(() => {
-          toast({
-            title: "Success",
-            description: "Group created successfully",
-            variant: "default",
-            duration: 1000,
-          });
+        .then((res) => {
+          if (res?.status === 200) {
+            toast({
+              title: "Success",
+              description: "Group created successfully",
+              variant: "default",
+              duration: 1000,
+            });
+          } else {
+            toast({
+              title: "Error",
+              description: res?.data?.message || "Something went wrong",
+              variant: "destructive",
+              duration: 1000,
+            });
+          }
           setSelectedMembers([]);
           groupName.value = "";
         });
@@ -185,10 +193,7 @@ const NewGroup = () => {
             <Skeleton variant="rounded" height={40} />
           ) : errorAvailableFriends ? (
             <Typography variant="body2" color="error" textAlign="center">
-              {('data' in errorAvailableFriendsMessage
-                ? (errorAvailableFriendsMessage.data as any)?.message
-                : (errorAvailableFriendsMessage as any)?.message) ||
-                "Something went wrong"}
+              {errorAvailableFriendsMessage}
             </Typography>
           ) : availableFriends?.friends?.length === 0 ? (
             <Typography variant="body2" textAlign="center">
