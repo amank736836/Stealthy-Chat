@@ -17,12 +17,15 @@ declare module "next-auth" {
       _id: string;
       isVerified: boolean;
       isAcceptingMessages: boolean;
+      name: string;
       username: string;
       email: string;
       avatar: {
         public_id: string;
         url: string;
       };
+      createdAt: string;
+      updatedAt: string;
     } & DefaultSession["user"];
   }
   interface token {
