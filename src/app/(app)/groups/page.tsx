@@ -1,3 +1,5 @@
+"use client";
+
 import { gradientBg } from "@/app/constants/color";
 import { LayoutLoader } from "@/components/layout/Loaders";
 import AvatarCard from "@/components/shared/AvatarCard";
