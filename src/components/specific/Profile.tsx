@@ -12,24 +12,29 @@ import {
 import { Avatar, Box, Stack, Switch, Typography } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
 
 const Profile = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
+
+  const { data: session } = useSession();
+
+  console.log("Session:", session);
+
   const { toast } = useToast();
 
   const route = useRouter();
 
-  if (!user) {
+  if (!session?.user) {
     route.push("/login");
     return null;
   }
 
   const baseUrl = `${window.location.origin}`;
-  const profileUrl = `${baseUrl}/u/${user.username}`;
+  const profileUrl = `${baseUrl}/u/${session.user.username}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);
@@ -40,7 +45,7 @@ const Profile = () => {
   };
 
   const [isAcceptingMessages, setIsAcceptingMessages] = useState(
-    user?.isAcceptingMessages || false
+    session.user.isAcceptingMessages || false
   );
 
   const handleAcceptMessages = async () => {
@@ -117,7 +122,7 @@ const Profile = () => {
             border: "5px solid white",
             boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
           }}
-          src={transformImageUrl(user?.avatar?.url)}
+          src={transformImageUrl(session.user.avatar.url)}
           alt="Profile Avatar"
         />
         <Stack
@@ -145,16 +150,16 @@ const Profile = () => {
           </Stack>
           <Switch checked={isAcceptingMessages} color="primary" size="medium" />
         </Stack>
-        <ProfileCard heading="Name" text={user?.name} Icon={<FaceIcon />} />
+        <ProfileCard heading="Name" text={session.user.name} Icon={<FaceIcon />} />
         <ProfileCard
           heading="Username"
-          text={user?.username}
+          text={session.user.username}
           Icon={<UsernameIcon />}
         />
-        <ProfileCard heading="Email" text={user?.email} Icon={<EmailIcon />} />
+        <ProfileCard heading="Email" text={session.user.email} Icon={<EmailIcon />} />
         <ProfileCard
           heading="Joining Days"
-          text={moment(user?.createdAt).fromNow(true)}
+          text={moment(session.user.createdAt).fromNow(true)}
           Icon={<CalendarIcon />}
         />
         {isAcceptingMessages && (
