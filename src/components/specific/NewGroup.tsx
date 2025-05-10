@@ -1,5 +1,4 @@
 import { useInputValidation } from "6pp";
-import { useAsyncMutation, useErrors } from "@/hooks/hook";
 import { useToast } from "@/hooks/use-toast";
 import { useGetAvailableFriendsQuery, useNewGroupMutation } from "@/lib/store/api";
 import { setIsNewGroup } from "@/lib/store/misc.reducer";
@@ -16,9 +15,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserItem from "../shared/UserItem";
+import useErrors from "@/hooks/hook";
+import { RootState } from "@/lib/store/store";
 
 const NewGroup = () => {
-  const { isNewGroup } = useSelector((state) => state.misc);
+  const { isNewGroup } = useSelector((state: RootState) => state.misc);
   const { toast } = useToast();
 
   const groupName = useInputValidation("");
@@ -42,7 +43,7 @@ const NewGroup = () => {
       isError: errorNewGroup,
       error: errorNewGroupMessage,
     },
-  ] = useAsyncMutation(useNewGroupMutation);
+  ] = useNewGroupMutation();
 
   useErrors([
     {
@@ -75,10 +76,26 @@ const NewGroup = () => {
       })
     }
 
-    newGroup("Creating new group...", {
-      name: groupName.value,
-      otherMembers: selectedMembers,
-    });
+    try {
+      newGroup({
+        name: groupName.value,
+        members: selectedMembers,
+      })
+        .unwrap()
+        .then(() => {
+          toast({
+            title: "Success",
+            description: "Group created successfully",
+            variant: "default",
+            duration: 1000,
+          });
+          setSelectedMembers([]);
+          groupName.value = "";
+        });
+    } catch (error) {
+      console.error("Error creating group:", error);
+
+    }
 
     closeGroupHandler();
   };
@@ -168,7 +185,10 @@ const NewGroup = () => {
             <Skeleton variant="rounded" height={40} />
           ) : errorAvailableFriends ? (
             <Typography variant="body2" color="error" textAlign="center">
-              {errorAvailableFriendsMessage}
+              {('data' in errorAvailableFriendsMessage
+                ? (errorAvailableFriendsMessage.data as any)?.message
+                : (errorAvailableFriendsMessage as any)?.message) ||
+                "Something went wrong"}
             </Typography>
           ) : availableFriends?.friends?.length === 0 ? (
             <Typography variant="body2" textAlign="center">
