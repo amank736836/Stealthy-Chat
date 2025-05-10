@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface Message extends Document {
+  _id: Types.ObjectId;
   sender: Types.ObjectId;
   chat: Types.ObjectId;
   content: string;
@@ -8,6 +9,8 @@ export interface Message extends Document {
     public_id: string;
     url: string;
   }[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const MessageSchema: Schema<Message> = new Schema(
