@@ -4,6 +4,8 @@ import MessageModel from "@/backend/model/message.model";
 import { AuthError, User } from "next-auth";
 
 export async function DELETE(request: Request) {
+  console.log("Delete message API called");
+
   const session = await auth();
 
   if (!session) {
@@ -33,6 +35,8 @@ export async function DELETE(request: Request) {
   }
 
   const { messageId } = await request.json();
+
+  console.log("Message ID:", messageId);
 
   if (!messageId) {
     return Response.json(
