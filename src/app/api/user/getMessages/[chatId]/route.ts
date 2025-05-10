@@ -2,14 +2,13 @@ import { auth } from "@/app/api/auth/[...nextauth]/option";
 import dbConnect from "@/backend/lib/dbConnect";
 import ChatModel from "@/backend/model/chat.model";
 import MessageModel from "@/backend/model/message.model";
-import UserModel from "@/backend/model/user.model";
 import { Types } from "mongoose";
 import { User } from "next-auth";
 import { NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ chatId: string }> }o
+  { params }: { params: Promise<{ chatId: string }> }
 ) {
   const session = await auth();
 
