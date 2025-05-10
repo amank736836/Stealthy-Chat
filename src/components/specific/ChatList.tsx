@@ -2,6 +2,28 @@ import { gradientBg } from "@/app/constants/color";
 import { Stack } from "@mui/material";
 import ChatItem from "../shared/ChatItem";
 
+interface Chat {
+  _id: string;
+  avatar: string;
+  name: string;
+  groupChat: boolean;
+  members?: string[];
+}
+
+interface NewMessageAlert {
+  chatId: string;
+  count: number;
+}
+
+interface ChatListProps {
+  w?: string;
+  chats?: Chat[];
+  chatId?: string;
+  onlineUsers?: string[];
+  handleDeleteChat?: (e: React.MouseEvent, chatId: string, groupChat: boolean) => void;
+  newMessagesAlert?: NewMessageAlert[];
+}
+
 const ChatList = ({
   w = "100%",
   chats = [],
@@ -9,7 +31,7 @@ const ChatList = ({
   onlineUsers = [],
   handleDeleteChat,
   newMessagesAlert = [],
-}) => {
+}: ChatListProps) => {
   return (
     <Stack
       height={"100%"}
@@ -36,22 +58,26 @@ const ChatList = ({
           ({ chatId }) => chatId === _id
         );
 
-        const isOnline = members?.some((member) =>
-          onlineUsers.includes(member)
-        );
+        const isOnline = groupChat
+          ? members.some((member) => onlineUsers.includes(member))
+          : onlineUsers.includes(_id);
 
         return (
           <ChatItem
             index={index}
             newMessageCount={newMessageCount?.count || 0}
             isOnline={isOnline}
-            avatar={avatar}
+            avatar={[avatar]}
             name={name}
             _id={_id}
             key={_id}
             groupChat={groupChat}
             sameSender={_id === chatId}
-            handleDeleteChat={handleDeleteChat}
+            handleDeleteChat={
+              handleDeleteChat
+                ? (e: React.MouseEvent, chatId: string, groupChat: boolean) => handleDeleteChat(e, chatId, groupChat)
+                : () => { }
+            }
           />
         );
       })}
