@@ -1,7 +1,8 @@
 import { dialogBg } from "@/app/constants/color";
-import { useAsyncMutation, useErrors } from "@/hooks/hook";
+import useErrors from "@/hooks/hook";
 import { useAddGroupMembersMutation, useGetAvailableFriendsQuery } from "@/lib/store/api";
 import { setIsAddMember } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import {
     Box,
     Button,
@@ -12,17 +13,16 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import { User } from "next-auth";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import UserItem from "../shared/UserItem";
+import UserItem, { User } from "../shared/UserItem";
 
 interface AddMemberDialogProps {
     chatId: string;
 }
 
 const AddMemberDialog = ({ chatId }: AddMemberDialogProps) => {
-    const { isAddMember } = useSelector((state) => state.misc);
+    const { isAddMember } = useSelector((state: RootState) => state.misc);
 
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
 
@@ -42,7 +42,7 @@ const AddMemberDialog = ({ chatId }: AddMemberDialogProps) => {
             isError: isErrorAddMember,
             error: errorAddMember,
         },
-    ] = useAsyncMutation(useAddGroupMembersMutation);
+    ] = useAddGroupMembersMutation();
 
     useErrors([
         { isError: isErrorAddMember, error: errorAddMember },
@@ -50,10 +50,19 @@ const AddMemberDialog = ({ chatId }: AddMemberDialogProps) => {
     ]);
 
     const addMembersSubmitHandler = () => {
-        addMembers("Adding Members...", {
-            chatId,
-            members: selectedMembers,
-        });
+        try {
+            if (selectedMembers.length === 0) {
+                return;
+            }
+            addMembers({ chatId, members: selectedMembers })
+                .unwrap()
+                .then(() => {
+                    setSelectedMembers([]);
+                    dispatch(setIsAddMember(false));
+                });
+        } catch (error) {
+
+        }
         closeHandler();
     };
 
