@@ -6,8 +6,8 @@ import FileMenu from "@/components/dialog/FileMenu";
 import { TypingLoader } from "@/components/layout/Loaders";
 import MessageComponent from "@/components/shared/MessageComponent";
 import { InputBox } from "@/components/styles/StyledComponents";
-import useErrors from "@/hooks/hook";
-import { useGetChatDetailsQuery, useGetMessagesQuery } from "@/lib/store/api";
+import { useErrors } from "@/hooks/hook";
+import { useGetChatDetailsQuery, useGetMessagesQuery } from "@/hooks/query";
 import { removeNewMessagesAlert } from "@/lib/store/chat.reducer";
 import { setIsFileMenu } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
@@ -60,7 +60,7 @@ const Chat = ({ chatId }: ChatProps) => {
         isLoading: isLoadingChatDetails,
         isError: isErrorChatDetails,
         error: errorChatDetails,
-    } = useGetChatDetailsQuery({ chatId, populate: true }, { skip: !chatId });
+    } = useGetChatDetailsQuery({ chatId, populate: true });
 
     const {
         data: oldMessagesChunks,
@@ -70,7 +70,6 @@ const Chat = ({ chatId }: ChatProps) => {
     } = useGetMessagesQuery({
         chatId,
         page,
-        skip: !chatId,
     });
 
     useErrors([
@@ -285,7 +284,7 @@ const Chat = ({ chatId }: ChatProps) => {
 
     useEffect(() => {
         if (!user) return;
-        
+
         socket?.emit(CHAT_JOINED, {
             chatId,
             userId: user._id,
