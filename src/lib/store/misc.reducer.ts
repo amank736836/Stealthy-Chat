@@ -1,6 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+type MiscState = {
+  isNewGroup: boolean;
+  isAddMember: boolean;
+  isNotification: boolean;
+  isMobile: boolean;
+  isSearch: boolean;
+  isFileMenu: boolean;
+  isDeleteMenu: boolean;
+  uploadingLoader: boolean;
+  selectedDeleteChat: {
+    chatId: string;
+    groupChat: boolean;
+  };
+};
+
+const initialState: MiscState = {
   isNewGroup: false,
   isAddMember: false,
   isNotification: false,
