@@ -23,7 +23,6 @@ export const metadata: Metadata = {
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/context/AuthProvider";
 import { ThemeProvider } from "next-themes";
-import { Provider } from "react-redux";
 import StoreProvider from "./StoreProvider";
 
 
@@ -45,7 +44,6 @@ export default function RootLayout({
 
         <AuthProvider>
           <StoreProvider>
-
             <ThemeProvider attribute="class">
               <Navbar />
               {children}
