@@ -13,7 +13,7 @@ interface ChatItemProps {
   isOnline?: boolean;
   newMessageCount?: number;
   index?: number;
-  handleDeleteChat: (e: React.MouseEvent, id: string, isGroupChat: boolean) => void;
+  handleDeleteChat: (e: React.MouseEvent<HTMLElement>, id: string, isGroupChat: boolean) => void;
 }
 
 const ChatItem: React.FC<ChatItemProps> = ({
