@@ -77,7 +77,7 @@ export async function POST(request: Request) {
       content,
     });
 
-    await user.save();
+    await message.save();
 
     return Response.json(
       {
