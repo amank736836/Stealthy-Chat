@@ -1,3 +1,5 @@
+"use client";
+
 import { gradientBg } from "@/app/constants/color";
 import { Box, Stack, Typography } from "@mui/material";
 import React from "react";
