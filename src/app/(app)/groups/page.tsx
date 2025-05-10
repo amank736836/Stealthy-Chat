@@ -1,9 +1,8 @@
 import { gradientBg } from "@/app/constants/color";
 import { LayoutLoader } from "@/components/layout/Loaders";
 import AvatarCard from "@/components/shared/AvatarCard";
-import UserItem, { User } from "@/components/shared/UserItem";
+import UserItem from "@/components/shared/UserItem";
 import { StyledLink } from "@/components/styles/StyledComponents";
-import { useAddGroupMembersMutation, useGetChatDetailsQuery, useGetMyGroupsQuery, useRemoveMemberMutation, useRenameGroupMutation } from "@/lib/store/api";
 import { setIsAddMember, setIsDeleteMenu, setIsMobile } from "@/lib/store/misc.reducer";
 import {
     Add as AddIcon,
@@ -40,6 +39,8 @@ const AddMemberDialog = lazy(() =>
 
 import type { RootState } from "@/lib/store/store";
 import { useToast } from "@/hooks/use-toast";
+import { useGetChatDetailsQuery, useGetMyGroupsQuery } from "@/hooks/query";
+import { useRemoveMemberMutation, useRenameGroupMutation } from "@/hooks/mutation";
 const Groups = () => {
 
     const { isMobile, isDeleteMenu, isAddMember } = useSelector(
@@ -51,7 +52,7 @@ const Groups = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const chatId = useSearchParams()[0].get("group");
+    const chatId = useSearchParams()[0].get("group") || "";
 
     const [groupName, setGroupName] = useState("Group Details Page");
     const [groupNameUpdatedValue, setGroupNameUpdatedValue] = useState<string>("");
@@ -72,32 +73,29 @@ const Groups = () => {
         isLoading: isLoadingMyGroups,
         isError: isErrorMyGroups,
         error: errorMyGroups,
-    } = useGetMyGroupsQuery("");
+    } = useGetMyGroupsQuery();
 
     const {
         data: groupDetails,
         isLoading: isLoadingGroupDetails,
         isError: isErrorGroupDetails,
         error: errorGroupDetails,
-    } = useGetChatDetailsQuery({ chatId, populate: true }, { skip: !chatId });
+    } = useGetChatDetailsQuery({ chatId, populate: true });
 
-    const [
-        updateGroupNameMutation,
-        {
-            isLoading: isLoadingUpdateGroupName,
-            isError: isErrorUpdateGroupName,
-            error: errorUpdateGroupName,
-        },
-    ] = useRenameGroupMutation();
+    const {
+        renameGroupMutation,
+        isLoading: isLoadingUpdateGroupName,
+        isError: isErrorUpdateGroupName,
+        error: errorUpdateGroupName,
+    } = useRenameGroupMutation();
 
-    const [
-        removeMemberMutation,
+    const
         {
+            removeMemberMutation,
             isLoading: isLoadingRemoveMember,
             isError: isErrorRemoveMember,
             error: errorRemoveMember,
-        },
-    ] = useRemoveMemberMutation();
+        } = useRemoveMemberMutation();
 
     const handleErrors = (isError: boolean, error: any, message: string) => {
         if (isError) {
@@ -160,10 +158,10 @@ const Groups = () => {
         });
         try {
 
-            const res = await updateGroupNameMutation({
+            const res = await renameGroupMutation({
                 chatId,
                 name: groupNameUpdatedValue,
-            }).unwrap();
+            })
             if (res) {
                 toastId.update({
                     title: "Group name updated",
@@ -213,7 +211,7 @@ const Groups = () => {
             const res = await removeMemberMutation({
                 chatId,
                 memberId,
-            } as RemoveMemberParams).unwrap();
+            } as RemoveMemberParams)
 
             if (res) {
                 setMembers((prevMembers) =>
