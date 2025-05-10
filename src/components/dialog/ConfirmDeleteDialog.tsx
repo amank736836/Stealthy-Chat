@@ -1,6 +1,6 @@
-import useErrors from "@/hooks/hook";
+import { useErrors } from "@/hooks/hook";
+import { useDeleteChatMutation } from "@/hooks/mutation";
 import { useToast } from "@/hooks/use-toast";
-import { useDeleteChatMutation } from "@/lib/store/api";
 import { setIsDeleteMenu } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
 import {
@@ -28,15 +28,14 @@ const confirmDeleteDialog = ({ chatId }: ConfirmDeleteDialogProps) => {
     dispatch(setIsDeleteMenu(false));
   };
 
-  const [
-    deleteChatMutation,
+  const
     {
+      deleteChatMutation,
       data: deleteChatData,
       isLoading: isLoadingDeleteChat,
       isError: isErrorDeleteChat,
       error: errorDeleteChat,
-    },
-  ] = useDeleteChatMutation();
+    } = useDeleteChatMutation();
 
   useErrors([
     {
@@ -48,14 +47,23 @@ const confirmDeleteDialog = ({ chatId }: ConfirmDeleteDialogProps) => {
   const deleteHandler = () => {
     try {
       deleteChatMutation(chatId)
-        .unwrap()
-        .then(() => {
-          toast({
-            title: "Success",
-            description: "Chat deleted successfully",
-            variant: "default",
-            duration: 1000,
-          });
+        .then((res) => {
+          if (res?.status === 200) {
+            toast({
+              title: "Chat deleted successfully",
+              description: "The chat has been deleted successfully.",
+              variant: "default",
+              duration: 1000,
+
+            });
+          } else {
+            toast({
+              title: "Error deleting chat",
+              description: "An error occurred while deleting the chat.",
+              variant: "destructive",
+              duration: 1000,
+            });
+          }
         });
     } catch (error) {
 
