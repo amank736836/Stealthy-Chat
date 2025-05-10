@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { socket } from "@/lib/features";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
@@ -27,12 +28,14 @@ function Dashboard() {
 
   const handleDeleteMessage = (messageId: string) => {
     setMessages((prevMessages) =>
-      prevMessages.filter((message) => message._id !== messageId)
+      prevMessages.filter((message) => message._id.toString() !== messageId)
     );
   };
 
   const { data: session } = useSession();
   const router = useRouter();
+
+  console.log("Socket:", socket);
 
   const form = useForm<z.infer<typeof acceptMessageSchema>>({
     resolver: zodResolver(acceptMessageSchema),
@@ -68,11 +71,9 @@ function Dashboard() {
   const fetchMessages = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get<ApiResponse>("/api/user/getMessages/", {
-        params: {
-          chatId: session?.user._id,
-        },
-      });
+      const response = await axios.get<ApiResponse>("/api/user/getMessages");
+
+      console.log("Messages:", response.data);
       setMessages(response.data.messages || []);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
@@ -189,7 +190,7 @@ function Dashboard() {
         {messages.length > 0 ? (
           messages.map((message) => (
             <MessageCard
-              key={message._id as string}
+              key={message._id.toString()}
               message={message}
               onMessageDelete={handleDeleteMessage}
             />
