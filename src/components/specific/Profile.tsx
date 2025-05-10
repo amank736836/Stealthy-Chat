@@ -1,6 +1,7 @@
 import { gradientBg } from "@/app/constants/color";
 import { useToast } from "@/hooks/use-toast";
 import { transformImageUrl } from "@/lib/features";
+import { RootState } from "@/lib/store/store";
 import {
   CalendarMonth as CalendarIcon,
   Email as EmailIcon,
@@ -11,12 +12,21 @@ import {
 import { Avatar, Box, Stack, Switch, Typography } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
+
 const Profile = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const { toast } = useToast();
+
+  const route = useRouter();
+
+  if (!user) {
+    route.push("/login");
+    return null;
+  }
 
   const baseUrl = `${window.location.origin}`;
   const profileUrl = `${baseUrl}/u/${user.username}`;
