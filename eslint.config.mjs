@@ -16,6 +16,7 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@ts-ignore": "off",
+      "@typescript-eslint/no-require-imports": "off",
     },
   }),
 ];
