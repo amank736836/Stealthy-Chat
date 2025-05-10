@@ -1,7 +1,13 @@
+import { useSocketEvents } from "6pp";
+import { getSockets } from "@/backend/lib/socket";
+import DeleteChatMenu from "@/components/dialog/DeleteChatMenu";
+import Header from "@/components/layout/Header";
+import { useGetOrSaveFromStorage } from "@/hooks/hook";
+import { useGetMyChatsQuery } from "@/hooks/query";
 import { useToast } from "@/hooks/use-toast";
-import { getOrSaveFromStorage } from "@/lib/features";
 import { incrementNotificationCount, setNewMessagesAlert } from "@/lib/store/chat.reducer";
 import { setIsDeleteMenu, setIsMobile, setSelectedDeleteChat } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import { Drawer, Grid, Skeleton, Stack } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -14,12 +20,6 @@ import {
     ONLINE_USERS,
     REFETCH_CHATS,
 } from "../../constants/events";
-import DeleteChatMenu from "@/components/dialog/DeleteChatMenu";
-import Header from "@/components/layout/Header";
-import { getSockets } from "@/backend/lib/socket";
-import { useGetMyChatsQuery } from "@/lib/store/api";
-import { useSocketEvents } from "6pp";
-import { RootState } from "@/lib/store/store";
 
 
 const ChatList = lazy(() => import("@/components/specific/ChatList"));
@@ -59,16 +59,13 @@ const AppLayout = ({
         isError: isErrorChats,
         error: errorChats,
         refetch: refetchChats,
-    } = useGetMyChatsQuery("");
+    } = useGetMyChatsQuery();
 
     useEffect(() => {
         if (isErrorChats) {
             toast({
                 title: "Error",
-                description:
-                    (errorChats && "data" in errorChats && (errorChats.data as any)?.message) ||
-                    (errorChats && "message" in errorChats && errorChats.message) ||
-                    "Something went wrong",
+                description: errorChats,
                 variant: "destructive",
                 duration: 2000,
             });
@@ -78,12 +75,12 @@ const AppLayout = ({
 
 
     const handleDeleteChat = (
-        e: React.MouseEvent<HTMLElement, MouseEvent>,
+        e: React.MouseEvent<HTMLElement>,
         chatId: string,
         groupChat: boolean
     ): void => {
         e.preventDefault();
-        deleteOptionAnchor.current = e.currentTarget;
+        deleteOptionAnchor.current = e.currentTarget as HTMLElement;
         dispatch(setIsDeleteMenu(true));
         dispatch(setSelectedDeleteChat({ chatId, groupChat }));
     };
@@ -104,11 +101,7 @@ const AppLayout = ({
         dispatch(incrementNotificationCount());
     }, [dispatch]);
 
-    interface RefetchChatsListenerData {
-
-    }
-
-
+    interface RefetchChatsListenerData { }
 
     const refetchChatsListener = useCallback(
         (data: RefetchChatsListenerData) => {
@@ -146,12 +139,18 @@ const AppLayout = ({
 
     useSocketEvents(socket, eventHandlers);
 
+    const {
+        item: newMessagesAlertStorage,
+        setItem: setNewMessagesAlertStorage,
+    } = useGetOrSaveFromStorage({
+        key: NEW_MESSAGE_ALERT,
+        value: newMessagesAlert,
+    });
+
     useEffect(() => {
-        getOrSaveFromStorage({
-            key: NEW_MESSAGE_ALERT,
-            value: newMessagesAlert,
-            get: false,
-        });
+        if (newMessagesAlertStorage) {
+            setNewMessagesAlertStorage(newMessagesAlert);
+        }
     }, [newMessagesAlert]);
 
     return (
