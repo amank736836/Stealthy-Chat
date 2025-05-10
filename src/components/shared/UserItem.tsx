@@ -3,11 +3,10 @@ import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import { Avatar, IconButton, ListItem, Stack, Typography } from "@mui/material";
 import React, { memo } from "react";
 
-interface User {
+export interface User {
   _id: string;
   name: string;
   avatar: string;
-  id?: string; // Add other fields if needed
 }
 
 interface UserItemProps {
@@ -19,13 +18,12 @@ interface UserItemProps {
 }
 
 const UserItem: React.FC<UserItemProps> = ({
-  user,
+  user: { _id, name, avatar },
   handler,
   handlerIsLoading = null,
   isAdded = false,
   styling = {},
 }) => {
-  const { _id, name, avatar } = user;
 
   return (
     <ListItem>
