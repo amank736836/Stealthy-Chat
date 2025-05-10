@@ -20,7 +20,7 @@ interface ChatListProps {
   chats?: Chat[];
   chatId?: string;
   onlineUsers?: string[];
-  handleDeleteChat?: (e: React.MouseEvent, chatId: string, groupChat: boolean) => void;
+  handleDeleteChat?: (e: React.MouseEvent<HTMLElement>, id: string, isGroupChat: boolean) => void;
   newMessagesAlert?: NewMessageAlert[];
 }
 
@@ -75,7 +75,7 @@ const ChatList = ({
             sameSender={_id === chatId}
             handleDeleteChat={
               handleDeleteChat
-                ? (e: React.MouseEvent, chatId: string, groupChat: boolean) => handleDeleteChat(e, chatId, groupChat)
+                ? (e: React.MouseEvent<HTMLElement>, id: string, isGroupChat: boolean) => handleDeleteChat(e, id, isGroupChat)
                 : () => { }
             }
           />
