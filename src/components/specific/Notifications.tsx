@@ -1,8 +1,9 @@
 import { dialogBg } from "@/app/constants/color";
-import useErrors from "@/hooks/hook";
+import { useErrors } from "@/hooks/hook";
+import { useAcceptFriendRequestMutation } from "@/hooks/mutation";
+import { useGetMyNotificationsQuery } from "@/hooks/query";
 import { useToast } from "@/hooks/use-toast";
 import { transformImageUrl } from "@/lib/features";
-import { useAcceptFriendRequestMutation, useGetMyNotificationsQuery } from "@/lib/store/api";
 import { setIsNotification } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
 import {
@@ -17,7 +18,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const Notifications = () => {
@@ -37,22 +38,22 @@ const Notifications = () => {
 
   const dispatch = useDispatch();
 
-  const [
-    acceptFriendRequest,
+  const
     {
+      acceptFriendRequestMutation,
       data: acceptFriendRequestData,
       isLoading: isLoadingAcceptFriendRequest,
       isError: isErrorAcceptFriendRequest,
       error: errorAcceptFriendRequest,
-    },
-  ] = useAcceptFriendRequestMutation();
+    }
+      = useAcceptFriendRequestMutation();
 
   const {
     data: notificationsData,
     isLoading: isLoadingNotifications,
     isError: isErrorNotifications,
     error: errorNotifications,
-  } = useGetMyNotificationsQuery("");
+  } = useGetMyNotificationsQuery();
 
   useErrors([
     {
@@ -71,17 +72,35 @@ const Notifications = () => {
 
   const friendRequestHandler = async ({ _id, accept }: { _id: string; accept: boolean }) => {
     try {
-      await acceptFriendRequest(_id).unwrap().then(() => {
-        toast({
-          title: accept ? "Success" : "Rejected",
-          description: accept
-            ? "Friend request accepted successfully"
-            : "Friend request rejected successfully",
-          variant: "default",
-          duration: 1000,
-        });
-      }
-      );
+      await acceptFriendRequestMutation(_id).then((res) => {
+        if (res?.data.success) {
+          toast({
+            title: accept ? "Success" : "Rejected",
+            description: accept
+              ? "Friend request accepted successfully"
+              : "Friend request rejected successfully",
+            variant: "default",
+            duration: 1000,
+          });
+        }
+        else {
+          toast({
+            title: "Error",
+            description: res?.data.message,
+            variant: "destructive",
+            duration: 1000,
+          });
+        }
+      })
+        .catch((error) => {
+          toast({
+            title: "Error",
+            description: error?.response?.data?.message || "Something went wrong",
+            variant: "destructive",
+            duration: 1000,
+          });
+        }
+        );
 
     } catch (error) {
       toast({
