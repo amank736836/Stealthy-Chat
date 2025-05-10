@@ -3,7 +3,6 @@ import { parseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { v4 as uuid } from "uuid";
-import { isSocketAuthenticated } from "./auth";
 
 declare module "http" {
   interface IncomingMessage {
@@ -42,7 +41,7 @@ export const initializeSocket = (server: NetServer) => {
       string,
       string
     >;
-    isSocketAuthenticated(null, socket as unknown as SocketWithUser, next);
+    const token = socket.request.cookies[process.env.STEALTHY_CHAT_TOKEN_NAME!];
   });
 
   io.on("connection", (socket) => {
