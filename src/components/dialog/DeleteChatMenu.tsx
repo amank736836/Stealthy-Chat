@@ -1,6 +1,6 @@
-import useErrors from "@/hooks/hook";
+import { useErrors } from "@/hooks/hook";
+import { useDeleteChatMutation, useLeaveGroupMutation } from "@/hooks/mutation";
 import { useToast } from "@/hooks/use-toast";
-import { useDeleteChatMutation, useLeaveGroupMutation } from "@/lib/store/api";
 import { setIsDeleteMenu } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
 import {
@@ -30,25 +30,24 @@ const DeleteChatMenu: React.FC<DeleteChatMenuProps> = ({ deleteOptionAnchor }) =
     dispatch(setIsDeleteMenu(false));
   };
 
-  const [
+  const {
     deleteChatMutation,
-    {
-      data: deleteChatData,
-      isLoading: isLoadingDeleteChat,
-      isError: isErrorDeleteChat,
-      error: errorDeleteChat,
-    },
-  ] = useDeleteChatMutation();
+    data: deleteChatData,
+    isLoading: isLoadingDeleteChat,
+    isError: isErrorDeleteChat,
+    error: errorDeleteChat,
+  }
+    = useDeleteChatMutation();
 
-  const [
-    leaveGroupMutation,
+  const
     {
+      leaveGroupMutation,
       data: leaveGroupData,
       isLoading: isLoadingLeaveGroup,
       isError: isErrorLeaveGroup,
       error: errorLeaveGroup,
-    },
-  ] = useLeaveGroupMutation();
+    }
+      = useLeaveGroupMutation();
 
   useErrors([
     {
@@ -60,7 +59,6 @@ const DeleteChatMenu: React.FC<DeleteChatMenuProps> = ({ deleteOptionAnchor }) =
   const leaveGroup = () => {
     try {
       leaveGroupMutation(selectedDeleteChat.chatId)
-        .unwrap()
         .then(() => {
           toast({
             title: "Success",
@@ -78,7 +76,6 @@ const DeleteChatMenu: React.FC<DeleteChatMenuProps> = ({ deleteOptionAnchor }) =
   const deleteChat = () => {
     try {
       deleteChatMutation(selectedDeleteChat.chatId)
-        .unwrap()
         .then(() => {
           toast({
             title: "Success",
