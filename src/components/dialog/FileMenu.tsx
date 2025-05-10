@@ -1,7 +1,8 @@
 import { useErrors } from "@/hooks/hook";
+import { useSendAttachmentsMutation } from "@/hooks/mutation";
 import { useToast } from "@/hooks/use-toast";
-import { useSendAttachmentsMutation } from "@/lib/store/api";
 import { setIsFileMenu, setUploadingLoader } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import {
   AudioFile as AudioFileIcon,
   Image as ImageIcon,
@@ -12,28 +13,32 @@ import { ListItemText, Menu, MenuItem, MenuList, Tooltip } from "@mui/material";
 import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const FileMenu = ({ anchorE1, chatId }) => {
+interface FileMenuProps {
+  anchorE1: HTMLElement | null;
+  chatId: string;
+}
+
+const FileMenu = ({ anchorE1, chatId }: FileMenuProps) => {
   const { toast } = useToast();
   const dispatch = useDispatch();
-  const { isFileMenu } = useSelector((state) => state.misc);
+  const { isFileMenu } = useSelector((state: RootState) => state.misc);
 
   const closeFileMenu = () => {
     dispatch(setIsFileMenu(false));
   };
 
-  const imageRef = useRef(null);
-  const audioRef = useRef(null);
-  const videoRef = useRef(null);
-  const fileRef = useRef(null);
+  const imageRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  const [
-    sendAttachments,
+  const
     {
+      sendAttachmentsMutation,
       isLoading: isLoadingSendAttachments,
       isError: isErrorSendAttachments,
       error: errorSendAttachments,
-    },
-  ] = useSendAttachmentsMutation();
+    } = useSendAttachmentsMutation();
 
   useErrors([
     {
@@ -58,8 +63,8 @@ const FileMenu = ({ anchorE1, chatId }) => {
     fileRef.current?.click();
   };
 
-  const handleFileUpload = async (e, key) => {
-    const files = Array.from(e.target.files);
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    const files = Array.from(e.target.files as FileList) as File[];
 
     if (files.length <= 0) return;
 
@@ -93,7 +98,7 @@ const FileMenu = ({ anchorE1, chatId }) => {
         myForm.append("files", file);
       });
 
-      const res = await sendAttachments(myForm);
+      const res = await sendAttachmentsMutation(myForm);
 
       if (res.data) {
         toast({
@@ -144,6 +149,7 @@ const FileMenu = ({ anchorE1, chatId }) => {
             </Tooltip>
             <ListItemText style={{ marginLeft: "0.5rem" }}>Image</ListItemText>
             <input
+              title="Image"
               ref={imageRef}
               type="file"
               accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
@@ -160,6 +166,7 @@ const FileMenu = ({ anchorE1, chatId }) => {
             </Tooltip>
             <ListItemText style={{ marginLeft: "0.5rem" }}>Audio</ListItemText>
             <input
+              title="Audio"
               ref={audioRef}
               type="file"
               accept="audio/mpeg, audio/wav, audio/mp3, audio/aac, audio/m4a, audio/flac"
@@ -176,6 +183,7 @@ const FileMenu = ({ anchorE1, chatId }) => {
             </Tooltip>
             <ListItemText style={{ marginLeft: "0.5rem" }}>Video</ListItemText>
             <input
+              title="Video"
               ref={videoRef}
               type="file"
               accept="video/mp4, video/webm, video/mkv, video/avi, video/mov, video/flv, video/wmv"
@@ -192,6 +200,7 @@ const FileMenu = ({ anchorE1, chatId }) => {
             </Tooltip>
             <ListItemText style={{ marginLeft: "0.5rem" }}>File</ListItemText>
             <input
+              title="File"
               ref={fileRef}
               type="file"
               accept="*"
