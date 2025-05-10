@@ -1,6 +1,7 @@
 import { dialogBg } from "@/app/constants/color";
-import useErrors from "@/hooks/hook";
-import { useAddGroupMembersMutation, useGetAvailableFriendsQuery } from "@/lib/store/api";
+import { useErrors } from "@/hooks/hook";
+import { useAddGroupMembersMutation } from "@/hooks/mutation";
+import { useGetAvailableFriendsQuery } from "@/hooks/query";
 import { setIsAddMember } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
 import {
@@ -33,16 +34,17 @@ const AddMemberDialog = ({ chatId }: AddMemberDialogProps) => {
         isLoading: isLoadingAvailableFriends,
         isError: isErrorAvailableFriends,
         error: errorAvailableFriends,
-    } = useGetAvailableFriendsQuery(chatId);
+        fetch: fetchAvailableFriends,
+    } = useGetAvailableFriendsQuery();
 
-    const [
-        addMembers,
+    const
         {
+            addGroupMembersMutation,
             isLoading: isLoadingAddMember,
             isError: isErrorAddMember,
             error: errorAddMember,
-        },
-    ] = useAddGroupMembersMutation();
+        }
+            = useAddGroupMembersMutation();
 
     useErrors([
         { isError: isErrorAddMember, error: errorAddMember },
@@ -54,8 +56,7 @@ const AddMemberDialog = ({ chatId }: AddMemberDialogProps) => {
             if (selectedMembers.length === 0) {
                 return;
             }
-            addMembers({ chatId, members: selectedMembers })
-                .unwrap()
+            addGroupMembersMutation({ chatId, members: selectedMembers })
                 .then(() => {
                     setSelectedMembers([]);
                     dispatch(setIsAddMember(false));
@@ -129,9 +130,7 @@ const AddMemberDialog = ({ chatId }: AddMemberDialogProps) => {
                             />
                         ) : isErrorAvailableFriends ? (
                             <Typography textAlign={"center"} key={"AddMemberError"}>
-                                {(errorAvailableFriends && 'data' in errorAvailableFriends && (errorAvailableFriends as any).data?.message) ||
-                                    (errorAvailableFriends && 'message' in errorAvailableFriends && (errorAvailableFriends as any).message) ||
-                                    "Something went wrong"}
+                                {errorAvailableFriends}
                             </Typography>
                         ) : availableFriends?.friends?.length > 0 ? (
                             (availableFriends?.friends as User[])?.map((user: User) => (
