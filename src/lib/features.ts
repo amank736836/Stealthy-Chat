@@ -1,66 +1,50 @@
+"use client";
 import moment from "moment";
 
-const fileFormat = (url = "") => {
-  const fileExtension = (url.split(".").pop() || "").toLowerCase();
+// Sets for quick lookup
+const videoExtensions = new Set(["mp4", "webm", "mkv", "avi", "mov", "flv", "wmv"]);
+const audioExtensions = new Set(["mp3", "wav", "aac", "m4a", "flac", "mpeg"]);
+const imageExtensions = new Set(["jpg", "jpeg", "png", "gif", "webp"]);
 
-  if (
-    fileExtension === "mp4" ||
-    fileExtension === "webm" ||
-    fileExtension === "mkv" ||
-    fileExtension === "avi" ||
-    fileExtension === "mov" ||
-    fileExtension === "flv" ||
-    fileExtension === "wmv"
-  ) {
-    return "video";
-  }
-  if (
-    fileExtension === "mp3" ||
-    fileExtension === "wav" ||
-    fileExtension === "aac" ||
-    fileExtension === "m4a" ||
-    fileExtension === "flac" ||
-    fileExtension === "mpeg"
-  ) {
-    return "audio";
-  }
-  if (
-    fileExtension === "jpg" ||
-    fileExtension === "jpeg" ||
-    fileExtension === "png" ||
-    fileExtension === "gif" ||
-    fileExtension === "webp"
-  ) {
-    return "image";
-  }
+const fileFormat = (url: string = ""): "video" | "audio" | "image" | "file" => {
+  const extension = url.split(".").pop()?.toLowerCase() || "";
+
+  if (videoExtensions.has(extension)) return "video";
+  if (audioExtensions.has(extension)) return "audio";
+  if (imageExtensions.has(extension)) return "image";
 
   return "file";
 };
 
-const transformImageUrl = (url = "", width = 100) =>
+const transformImageUrl = (url: string = "", width: number = 100): string =>
   url.replace("upload", `upload/dpr_auto/w_${width}`);
 
-const getLast7Days = () => {
-  const currentDate = moment();
-  const last7Days = [];
+const getLast7Days = (): string[] => {
+  const days: string[] = [];
+  const today = moment();
 
   for (let i = 0; i < 7; i++) {
-    last7Days.unshift(currentDate.subtract(1, "days").format("dddd"));
+    days.unshift(today.clone().subtract(i + 1, "days").format("dddd"));
   }
-  return last7Days;
+
+  return days;
 };
 
-const getOrSaveFromStorage = ({
-  key,
-  value,
-  get,
-}: { key: string; value?: unknown; get: boolean }) => {
+type StorageOptions = {
+  key: string;
+  value?: unknown;
+  get: boolean;
+};
+
+const getOrSaveFromStorage = ({ key, value, get }: StorageOptions): unknown => {
+  if (typeof window === "undefined") return null;
+
   if (get) {
     const item = localStorage.getItem(key);
     return item ? JSON.parse(item) : null;
-  } else if (value) {
+  } else if (value !== undefined) {
     localStorage.setItem(key, JSON.stringify(value));
   }
 };
 
-export { fileFormat, getLast7Days, getOrSaveFromStorage, transformImageUrl };
+export { fileFormat, transformImageUrl, getLast7Days, getOrSaveFromStorage };
