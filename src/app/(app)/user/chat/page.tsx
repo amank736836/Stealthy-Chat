@@ -1,3 +1,5 @@
+"use client";
+
 import { useInfiniteScrollTop, useSocketEvents } from "6pp";
 import { grayColor, orange } from "@/app/constants/color";
 import { ALERT, CHAT_JOINED, CHAT_LEAVED, NEW_MESSAGE, START_TYPING, STOP_TYPING } from "@/app/constants/events";
@@ -8,10 +10,10 @@ import MessageComponent from "@/components/shared/MessageComponent";
 import { InputBox } from "@/components/styles/StyledComponents";
 import { useErrors } from "@/hooks/hook";
 import { useGetChatDetailsQuery, useGetMessagesQuery } from "@/hooks/query";
+import { socket } from "@/lib/features";
 import { removeNewMessagesAlert } from "@/lib/store/chat.reducer";
 import { setIsFileMenu } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
-import { useSocket } from "@/providers/SocketProvider";
 import {
     AttachFile as AttachFileIcon,
     Send as SendIcon,
@@ -53,7 +55,6 @@ const Chat = ({ chatId }: ChatProps) => {
         dispatch(setIsFileMenu(true));
         setFileMenuAnchor(e.currentTarget);
     };
-    const socket = useSocket();
 
     const {
         data: chatDetails,
