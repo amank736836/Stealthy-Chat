@@ -2,6 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { userNotExists } from "@/lib/store/auth.reducer";
 import { resetNotificationCount } from "@/lib/store/chat.reducer";
 import { setIsMobile, setIsNewGroup, setIsNotification, setIsSearch } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import {
   Add as AddIcon,
   Close as CloseIcon,
@@ -22,17 +23,17 @@ import {
   Typography,
 } from "@mui/material";
 import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const dispatch = useDispatch();
   const { toast } = useToast();
 
   const { isMobile, isSearch, isNotification, isNewGroup } = useSelector(
-    (state) => state.misc
+    (state: RootState) => state.misc
   );
 
   const { notificationCount } = useSelector((state) => state.chat);
@@ -109,7 +110,7 @@ const Header = () => {
               transition: "color 0.3s",
               "&:hover": { color: "#FFDA79" },
             }}
-            onClick={() => navigate("/")}
+            onClick={() => router.push("/home")}
           >
             Chat App
           </Typography>
