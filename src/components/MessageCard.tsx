@@ -7,8 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import { Message } from "@/backend/model/user.model";
+import { Message } from "@/backend/model/message.model";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,12 +36,17 @@ function MessageCard({ message, onMessageDelete }: MessageCardProps) {
   const handleDeleteConfirm = async () => {
     try {
       const response = await axios.delete<ApiResponse>(
-        `/api/delete-message/${message._id}`
+        `/api/user/deleteMessage`, {
+        data: {
+          messageId: message._id.toString(),
+        },
+      }
       );
 
 
+
       if (response.data.success) {
-        onMessageDelete(message._id);
+        onMessageDelete(message._id.toString());
         toast({
           title: "Message deleted successfully",
           description: "Your message has been deleted successfully",
@@ -58,6 +62,9 @@ function MessageCard({ message, onMessageDelete }: MessageCardProps) {
         });
       }
     } catch (error) {
+
+      console.error("Error deleting message:", error);
+
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
         title: "Error deleting message",
@@ -85,8 +92,7 @@ function MessageCard({ message, onMessageDelete }: MessageCardProps) {
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  This action cannot be undone. This will permanently delete your message.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
