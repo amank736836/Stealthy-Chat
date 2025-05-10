@@ -1,9 +1,10 @@
 import { dialogBg } from "@/app/constants/color";
-import { useAsyncMutation, useErrors } from "@/hooks/hook";
+import useErrors from "@/hooks/hook";
 import { useToast } from "@/hooks/use-toast";
 import { transformImageUrl } from "@/lib/features";
 import { useAcceptFriendRequestMutation, useGetMyNotificationsQuery } from "@/lib/store/api";
 import { setIsNotification } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import {
   Avatar,
   Box,
@@ -21,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const Notifications = () => {
   const { toast } = useToast();
-  const { isNotification } = useSelector((state) => state.misc);
+  const { isNotification } = useSelector((state: RootState) => state.misc);
 
   interface NotificationType {
     _id: string;
@@ -44,14 +45,14 @@ const Notifications = () => {
       isError: isErrorAcceptFriendRequest,
       error: errorAcceptFriendRequest,
     },
-  ] = useAsyncMutation(useAcceptFriendRequestMutation);
+  ] = useAcceptFriendRequestMutation();
 
   const {
     data: notificationsData,
     isLoading: isLoadingNotifications,
     isError: isErrorNotifications,
     error: errorNotifications,
-  } = useGetMyNotificationsQuery();
+  } = useGetMyNotificationsQuery("");
 
   useErrors([
     {
@@ -69,10 +70,28 @@ const Notifications = () => {
   };
 
   const friendRequestHandler = async ({ _id, accept }: { _id: string; accept: boolean }) => {
-    await acceptFriendRequest("Accepting Friend Request...", {
-      requestId: _id,
-      accept,
-    });
+    try {
+      await acceptFriendRequest(_id).unwrap().then(() => {
+        toast({
+          title: accept ? "Success" : "Rejected",
+          description: accept
+            ? "Friend request accepted successfully"
+            : "Friend request rejected successfully",
+          variant: "default",
+          duration: 1000,
+        });
+      }
+      );
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+        duration: 1000,
+      });
+
+    }
   };
 
   useEffect(() => {
@@ -153,7 +172,7 @@ const Notifications = () => {
               }}
             />
           ) : notification.length > 0 ? (
-            notificationsData.allRequests.map((notification) => (
+            notificationsData.allRequests.map((notification: NotificationType) => (
               <NotificationItem
                 sender={notification.sender}
                 _id={notification._id}
