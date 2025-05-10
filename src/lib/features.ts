@@ -1,5 +1,7 @@
 "use client";
+
 import moment from "moment";
+import { io } from "socket.io-client";
 
 const videoExtensions = new Set([
   "mp4",
@@ -41,5 +43,6 @@ const getLast7Days = (): string[] => {
   return days;
 };
 
-export { fileFormat, getLast7Days, transformImageUrl };
+const socket = io();
 
+export { fileFormat, getLast7Days, transformImageUrl, socket };
