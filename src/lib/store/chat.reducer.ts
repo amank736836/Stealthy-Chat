@@ -1,8 +1,6 @@
-import { NEW_MESSAGE_ALERT } from "@/app/constants/events";
 import { createSlice } from "@reduxjs/toolkit";
-import { getOrSaveFromStorage } from "../features";
 
-interface NewMessageAlert {
+export interface NewMessageAlert {
   chatId: string;
   count: number;
 }
@@ -14,11 +12,7 @@ interface ChatState {
 
 const initialState: ChatState = {
   notificationCount: 0,
-  newMessagesAlert: getOrSaveFromStorage({
-    key: NEW_MESSAGE_ALERT,
-    get: true,
-    value: [],
-  }) || [
+  newMessagesAlert: [
     {
       chatId: "",
       count: 0,
