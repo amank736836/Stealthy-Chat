@@ -1,6 +1,8 @@
-import { useAsyncMutation, useErrors } from "@/hooks/hook";
+import useErrors from "@/hooks/hook";
+import { useToast } from "@/hooks/use-toast";
 import { useDeleteChatMutation } from "@/lib/store/api";
 import { setIsDeleteMenu } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import {
   Button,
   Dialog,
@@ -18,8 +20,9 @@ interface ConfirmDeleteDialogProps {
 
 const confirmDeleteDialog = ({ chatId }: ConfirmDeleteDialogProps) => {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const { isDeleteMenu } = useSelector((state) => state.misc);
+  const router = useRouter()
+  const { toast } = useToast();
+  const { isDeleteMenu } = useSelector((state: RootState) => state.misc);
 
   const handleClose = () => {
     dispatch(setIsDeleteMenu(false));
@@ -33,7 +36,7 @@ const confirmDeleteDialog = ({ chatId }: ConfirmDeleteDialogProps) => {
       isError: isErrorDeleteChat,
       error: errorDeleteChat,
     },
-  ] = useAsyncMutation(useDeleteChatMutation);
+  ] = useDeleteChatMutation();
 
   useErrors([
     {
@@ -43,7 +46,20 @@ const confirmDeleteDialog = ({ chatId }: ConfirmDeleteDialogProps) => {
   ]);
 
   const deleteHandler = () => {
-    deleteChatMutation("Deleting Group...", chatId);
+    try {
+      deleteChatMutation(chatId)
+        .unwrap()
+        .then(() => {
+          toast({
+            title: "Success",
+            description: "Chat deleted successfully",
+            variant: "default",
+            duration: 1000,
+          });
+        });
+    } catch (error) {
+
+    }
     router.push("/groups");
     handleClose();
   };
