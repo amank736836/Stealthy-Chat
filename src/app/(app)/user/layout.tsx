@@ -1,10 +1,11 @@
+"use client";
 import { useSocketEvents } from "6pp";
-import { getSockets } from "@/backend/lib/socket";
 import DeleteChatMenu from "@/components/dialog/DeleteChatMenu";
 import Header from "@/components/layout/Header";
 import { useGetOrSaveFromStorage } from "@/hooks/hook";
 import { useGetMyChatsQuery } from "@/hooks/query";
 import { useToast } from "@/hooks/use-toast";
+import { socket } from "@/lib/features";
 import { incrementNotificationCount, setNewMessagesAlert } from "@/lib/store/chat.reducer";
 import { setIsDeleteMenu, setIsMobile, setSelectedDeleteChat } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
@@ -50,8 +51,6 @@ const AppLayout = ({
         : params.chatId || "";
     const deleteOptionAnchor = useRef<HTMLElement | null>(null);
 
-    const sockets = getSockets();
-    const socket = Array.isArray(sockets) ? sockets[0] : sockets;
 
     const {
         data: chatsData,
@@ -152,6 +151,12 @@ const AppLayout = ({
             setNewMessagesAlertStorage(newMessagesAlert);
         }
     }, [newMessagesAlert]);
+
+    useEffect(() => {
+        if (session?.user) {
+            socket.emit("USER_CONNECTED", session.user.id);
+        }
+    }, [session]);
 
     return (
         <>
