@@ -1,7 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { adminLogin, adminLogout, getAdmin } from "./thunk.store";
 
-const initialState = {
+type AuthState = {
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    profilePicture: string;
+    isAcceptingMessages: boolean;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
+  isAdmin: boolean;
+  loader: boolean;
+};
+
+const initialState: AuthState = {
   user: null,
   isAdmin: false,
   loader: true,
