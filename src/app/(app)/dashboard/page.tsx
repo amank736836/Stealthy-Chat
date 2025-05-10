@@ -1,6 +1,6 @@
 "use client";
 
-import { Message } from "@/backend/model/user.model";
+import { Message } from "@/backend/model/message.model";
 import { acceptMessageSchema } from "@/backend/schemas/acceptMessageSchema";
 import MessageCard from "@/components/MessageCard";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ function Dashboard() {
   const fetchAcceptMessage = useCallback(async () => {
     setIsSwitchLoading(true);
     try {
-      const response = await axios.get<ApiResponse>("/api/accept-messages");
+      const response = await axios.get<ApiResponse>("/api/user/acceptMessages");
       setAcceptMessages(response.data.isAcceptingMessage || false);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
@@ -68,7 +68,11 @@ function Dashboard() {
   const fetchMessages = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get<ApiResponse>("/api/get-messages");
+      const response = await axios.get<ApiResponse>("/api/user/getMessages/", {
+        params: {
+          chatId: session?.user._id,
+        },
+      });
       setMessages(response.data.messages || []);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
@@ -185,7 +189,7 @@ function Dashboard() {
         {messages.length > 0 ? (
           messages.map((message) => (
             <MessageCard
-              key={message._id}
+              key={message._id as string}
               message={message}
               onMessageDelete={handleDeleteMessage}
             />
