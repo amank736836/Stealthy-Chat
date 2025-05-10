@@ -1,6 +1,8 @@
-import { useAsyncMutation, useErrors } from "@/hooks/hook";
+import useErrors from "@/hooks/hook";
+import { useToast } from "@/hooks/use-toast";
 import { useDeleteChatMutation, useLeaveGroupMutation } from "@/lib/store/api";
 import { setIsDeleteMenu } from "@/lib/store/misc.reducer";
+import { RootState } from "@/lib/store/store";
 import {
   Delete as DeleteIcon,
   ExitToApp as ExitToAppIcon,
@@ -17,8 +19,9 @@ interface DeleteChatMenuProps {
 const DeleteChatMenu: React.FC<DeleteChatMenuProps> = ({ deleteOptionAnchor }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { toast } = useToast();
   const { isDeleteMenu, selectedDeleteChat } = useSelector(
-    (state) => state.misc
+    (state: RootState) => state.misc
   );
 
   const isGroupChat = selectedDeleteChat.groupChat;
@@ -35,7 +38,7 @@ const DeleteChatMenu: React.FC<DeleteChatMenuProps> = ({ deleteOptionAnchor }) =
       isError: isErrorDeleteChat,
       error: errorDeleteChat,
     },
-  ] = useAsyncMutation(useDeleteChatMutation);
+  ] = useDeleteChatMutation();
 
   const [
     leaveGroupMutation,
@@ -45,7 +48,7 @@ const DeleteChatMenu: React.FC<DeleteChatMenuProps> = ({ deleteOptionAnchor }) =
       isError: isErrorLeaveGroup,
       error: errorLeaveGroup,
     },
-  ] = useAsyncMutation(useLeaveGroupMutation);
+  ] = useLeaveGroupMutation();
 
   useErrors([
     {
@@ -55,12 +58,38 @@ const DeleteChatMenu: React.FC<DeleteChatMenuProps> = ({ deleteOptionAnchor }) =
   ]);
 
   const leaveGroup = () => {
-    leaveGroupMutation("Leaving Group...", selectedDeleteChat.chatId);
+    try {
+      leaveGroupMutation(selectedDeleteChat.chatId)
+        .unwrap()
+        .then(() => {
+          toast({
+            title: "Success",
+            description: "Left group successfully",
+            variant: "default",
+            duration: 1000,
+          });
+        });
+    } catch (error) {
+      console.error("Error leaving group:", error);
+    }
     closeHandler();
   };
 
   const deleteChat = () => {
-    deleteChatMutation("Deleting Group...", selectedDeleteChat.chatId);
+    try {
+      deleteChatMutation(selectedDeleteChat.chatId)
+        .unwrap()
+        .then(() => {
+          toast({
+            title: "Success",
+            description: "Chat deleted successfully",
+            variant: "default",
+            duration: 1000,
+          });
+        });
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+    }
     closeHandler();
   };
 
