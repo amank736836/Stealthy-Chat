@@ -4,10 +4,15 @@ import { adminLogin, adminLogout, getAdmin } from "./thunk.store";
 type AuthState = {
   user: {
     id: string;
+    name: string;
     username: string;
     email: string;
-    profilePicture: string;
     isAcceptingMessages: boolean;
+    isVerified: boolean;
+    avatar: {
+      public_id: string;
+      url: string;
+    };
     createdAt: string;
     updatedAt: string;
   } | null;
