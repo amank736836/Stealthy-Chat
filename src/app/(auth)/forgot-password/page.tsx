@@ -16,7 +16,6 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,16 +28,8 @@ function ForgotPassword({
     identifier: string;
   }>;
 }) {
-  const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (session && session.user) {
-      router.push("/dashboard");
-      return;
-    }
-  }, [session, router]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
