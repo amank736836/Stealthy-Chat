@@ -39,10 +39,10 @@ const AddMemberDialog = lazy(() =>
     import("@/components/dialog/AddMemberDialog")
 );
 
-import type { RootState } from "@/lib/store/store";
-import { useToast } from "@/hooks/use-toast";
-import { useGetChatDetailsQuery, useGetMyGroupsQuery } from "@/hooks/query";
 import { useRemoveMemberMutation, useRenameGroupMutation } from "@/hooks/mutation";
+import { useGetChatDetailsQuery, useGetMyGroupsQuery } from "@/hooks/query";
+import { useToast } from "@/hooks/use-toast";
+import type { RootState } from "@/lib/store/store";
 const Groups = () => {
 
     const { isMobile, isDeleteMenu, isAddMember } = useSelector(
