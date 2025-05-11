@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 };
 
 import AuthProvider from "@/context/AuthProvider";
+import { SocketProvider } from "@/context/SocketProvider";
 import { ThemeProvider } from "next-themes";
 import StoreProvider from "../context/StoreProvider";
 
@@ -42,8 +43,10 @@ export default function RootLayout({
         <AuthProvider>
           <StoreProvider>
             <ThemeProvider attribute="class">
-              {children}
-              <Toaster />
+              <SocketProvider>
+                {children}
+                <Toaster />
+              </SocketProvider>
             </ThemeProvider>
           </StoreProvider>
         </AuthProvider>
