@@ -43,6 +43,5 @@ const getLast7Days = (): string[] => {
   return days;
 };
 
-const socket = io();
 
-export { fileFormat, getLast7Days, transformImageUrl, socket };
+export { fileFormat, getLast7Days, transformImageUrl };
