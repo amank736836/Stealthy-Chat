@@ -30,7 +30,6 @@ function Navbar() {
               variant="outline"
               onClick={() => {
                 signOut();
-                router.push(`/sign-in`);
               }}
             >
               Logout
