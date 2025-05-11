@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const Home = () => {
-  const { data: session } = useSession();
   const router = useRouter();
-
+  
+  const { data: session } = useSession();
   useEffect(() => {
     if (session && session.user) {
       router.push("/dashboard");
