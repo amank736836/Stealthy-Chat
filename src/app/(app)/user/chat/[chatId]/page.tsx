@@ -8,9 +8,9 @@ import FileMenu from "@/components/Menus/FileMenu";
 import { TypingLoader } from "@/components/layout/Loaders";
 import MessageComponent from "@/components/shared/MessageComponent";
 import { InputBox } from "@/components/styles/StyledComponents";
+import { getSocket } from "@/context/SocketProvider";
 import { useErrors } from "@/hooks/hook";
 import { useGetChatDetailsQuery, useGetMessagesQuery } from "@/hooks/query";
-import { socket } from "@/lib/features";
 import { removeNewMessagesAlert } from "@/lib/store/chat.reducer";
 import { setIsFileMenu } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
@@ -29,7 +29,6 @@ import {
     useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Socket } from "socket.io-client";
 
 const Chat = () => {
     const params = useParams<{ chatId: string }>();
@@ -38,6 +37,8 @@ const Chat = () => {
     const { data: session } = useSession();
     const router = useRouter();
     const { uploadingLoader } = useSelector((state: RootState) => state.misc);
+
+    const socket = getSocket();
 
     const [user, setUser] = useState<Partial<User>>({
         id: "",
@@ -154,7 +155,7 @@ const Chat = () => {
                 chatId,
                 senderId: user ? String(user._id) : "",
             };
-            socket.emit(START_TYPING, startTypingPayload);
+            socket?.emit(START_TYPING, startTypingPayload);
             setMeTyping(true);
         }
 
@@ -169,7 +170,7 @@ const Chat = () => {
                 chatId,
                 senderId: user ? String(user._id) : "",
             };
-            socket.emit(STOP_TYPING, stopTypingPayload);
+            socket?.emit(STOP_TYPING, stopTypingPayload);
         }, 2000);
     };
 
@@ -196,7 +197,7 @@ const Chat = () => {
             chatId,
             members,
         };
-        socket.emit(NEW_MESSAGE, newMessagePayload);
+        socket?.emit(NEW_MESSAGE, newMessagePayload);
 
         if (!user) return;
         const stopTypingPayload: StopTypingPayload = {
@@ -204,7 +205,7 @@ const Chat = () => {
             chatId,
             senderId: String(user._id),
         };
-        socket.emit(STOP_TYPING, stopTypingPayload);
+        socket?.emit(STOP_TYPING, stopTypingPayload);
 
         setMessage("");
     };
@@ -304,7 +305,7 @@ const Chat = () => {
     useEffect(() => {
         if (!user) return;
 
-        socket.emit(CHAT_JOINED, {
+        socket?.emit(CHAT_JOINED, {
             chatId,
             userId: user._id,
             members,
@@ -316,7 +317,7 @@ const Chat = () => {
             setPage(1);
             setOldMessages([]);
             setMessage("");
-            socket.emit(CHAT_LEAVED, {
+            socket?.emit(CHAT_LEAVED, {
                 chatId,
                 userId: user._id,
                 members,
