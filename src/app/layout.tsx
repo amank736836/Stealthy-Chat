@@ -20,7 +20,6 @@ export const metadata: Metadata = {
   description: "A stealthy note-taking app",
 };
 
-import Navbar from "@/components/Navbar";
 import AuthProvider from "@/context/AuthProvider";
 import { ThemeProvider } from "next-themes";
 import StoreProvider from "../context/StoreProvider";
@@ -43,7 +42,6 @@ export default function RootLayout({
         <AuthProvider>
           <StoreProvider>
             <ThemeProvider attribute="class">
-              <Navbar />
               {children}
               <Toaster />
             </ThemeProvider>
