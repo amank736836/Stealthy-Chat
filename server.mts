@@ -1,9 +1,15 @@
 import { parse as parseCookie } from "cookie";
 import next from "next";
 import { getToken } from "next-auth/jwt";
-import { createServer } from "node:http";
+import { createServer, IncomingMessage } from "node:http";
 import { Server } from "socket.io";
 import { v4 as uuid } from "uuid";
+
+declare module "node:http" {
+  interface IncomingMessage {
+    user?: any;
+  }
+}
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOSTNAME || "localhost";
@@ -60,8 +66,8 @@ app.prepare().then(() => {
         return;
       }
 
-      userSocketIDs.set(user._id.toString(), socket.id);
-      onlineUsers.add(user._id.toString());
+      userSocketIDs.set(user?._id, socket.id);
+      onlineUsers.add(user?._id);
 
       socket.on("NEW_MESSAGE", async ({ chatId, message, members }) => {
         const messageForRealTime = {
@@ -147,9 +153,6 @@ app.prepare().then(() => {
         socket.broadcast.emit("ONLINE_USERS", {
           onlineUsers: Array.from(onlineUsers),
         });
-      });
-
-      socket.on("disconnect", () => {
         console.log("A user disconnected");
       });
     } catch (error) {
