@@ -4,7 +4,7 @@ import { useInfiniteScrollTop, useSocketEvents } from "6pp";
 import { grayColor, orange } from "@/app/constants/color";
 import { ALERT, CHAT_JOINED, CHAT_LEAVED, NEW_MESSAGE, START_TYPING, STOP_TYPING } from "@/app/constants/events";
 import { User } from "@/backend/model/user.model";
-import FileMenu from "@/components/dialog/FileMenu";
+import FileMenu from "@/components/Menus/FileMenu";
 import { TypingLoader } from "@/components/layout/Loaders";
 import MessageComponent from "@/components/shared/MessageComponent";
 import { InputBox } from "@/components/styles/StyledComponents";
