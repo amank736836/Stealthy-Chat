@@ -1,4 +1,6 @@
 "use client";
+import { NEW_MESSAGE_ALERT } from "@/app/constants/events";
+import { useGetOrSaveFromStorage } from "@/hooks/hook";
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface NewMessageAlert {
@@ -13,7 +15,11 @@ interface ChatState {
 
 const initialState: ChatState = {
   notificationCount: 0,
-  newMessagesAlert: [
+  newMessagesAlert: useGetOrSaveFromStorage({
+    key: NEW_MESSAGE_ALERT,
+    value: [],
+    get: true,
+  }) || [
     {
       chatId: "",
       count: 0,
