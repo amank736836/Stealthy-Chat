@@ -1,5 +1,4 @@
 "use client";
-import { useSocketEvents } from "6pp";
 import DeleteChatMenu from "@/components/Menus/DeleteChatMenu";
 import Header from "@/components/layout/Header";
 import { useErrors, useGetOrSaveFromStorage } from "@/hooks/hook";
@@ -20,6 +19,8 @@ import {
     ONLINE_USERS,
     REFETCH_CHATS,
 } from "../../constants/events";
+import { getSocket } from "@/context/SocketProvider";
+import { useSocketEvents } from "6pp";
 
 
 const ChatList = lazy(() => import("@/components/specific/ChatList"));
@@ -31,8 +32,8 @@ const AppLayout = ({
     children: ReactNode;
 }>) => {
     const { toast } = useToast();
-    const { newMessagesAlert } = useSelector((state: RootState) => state.chat);
     const { isMobile } = useSelector((state: RootState) => state.misc);
+    const { newMessagesAlert } = useSelector((state: RootState) => state.chat);
 
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
@@ -45,6 +46,8 @@ const AppLayout = ({
     };
 
     const params = useParams();
+
+    const socket = getSocket();
 
     const chatId: string = Array.isArray(params.chatId)
         ? params.chatId[0] || ""
@@ -131,27 +134,15 @@ const AppLayout = ({
         [ONLINE_USERS]: onlineUsersListener,
     };
 
-    // useSocketEvents(socket, eventHandlers);
-
-    const {
-        item: newMessagesAlertStorage,
-        setItem: setNewMessagesAlertStorage,
-    } = useGetOrSaveFromStorage({
-        key: NEW_MESSAGE_ALERT,
-        value: newMessagesAlert,
-    });
+    useSocketEvents(socket, eventHandlers);
 
     useEffect(() => {
-        if (newMessagesAlertStorage) {
-            setNewMessagesAlertStorage(newMessagesAlert);
-        }
+        useGetOrSaveFromStorage({
+            key: NEW_MESSAGE_ALERT,
+            value: newMessagesAlert,
+            get: false,
+        })
     }, [newMessagesAlert]);
-
-    // useEffect(() => {
-    //     if (session?.user) {
-    //         socket.emit("USER_", session.user.id);
-    //     }
-    // }, [session]);
 
     return (
         <>
