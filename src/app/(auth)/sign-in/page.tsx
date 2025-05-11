@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
@@ -28,16 +28,8 @@ function SignIn({
     identifier: string;
   }>;
 }) {
-  const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (session && session.user) {
-      router.push("/dashboard");
-      return;
-    }
-  }, [session, router]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
