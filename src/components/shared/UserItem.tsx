@@ -34,7 +34,7 @@ const UserItem: React.FC<UserItemProps> = ({
         width={"100%"}
         {...styling}
       >
-        <Avatar src={transformImageUrl(avatar)} />
+        <Avatar src={avatar ? transformImageUrl(avatar) : ""} alt={name} />
         <Typography
           variant="body1"
           sx={{
