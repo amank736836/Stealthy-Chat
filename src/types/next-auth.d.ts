@@ -3,20 +3,25 @@ import { DefaultSession } from "next-auth";
 declare module "next-auth" {
   interface User {
     isVerified: boolean;
-    isAcceptingMessages: boolean;
+    isAcceptingMessage: boolean;
+    isAdmin: boolean;
     _id: string;
+    name: string;
     username: string;
     email: string;
     avatar: {
       public_id: string;
       url: string;
     };
+    createdAt: string;
+    updatedAt: string;
   }
   interface Session {
     user: {
-      _id: string;
       isVerified: boolean;
-      isAcceptingMessages: boolean;
+      isAcceptingMessage: boolean;
+      isAdmin: boolean;
+      _id: string;
       name: string;
       username: string;
       email: string;
@@ -29,10 +34,19 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
   interface token {
-    _id: string;
     isVerified: boolean;
-    isAcceptingMessages: boolean;
+    isAcceptingMessage: boolean;
+    isAdmin: boolean;
+    _id: string;
+    name: string;
     username: string;
+    email: string;
+    avatar: {
+      public_id: string;
+      url: string;
+    };
+    createdAt: string;
+    updatedAt: string;
   }
 
   interface Request {
@@ -54,7 +68,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     _id?: string;
     isVerified?: boolean;
-    isAcceptingMessages?: boolean;
+    isAcceptingMessage?: boolean;
     username?: string;
     email?: string;
     avatar?: {
