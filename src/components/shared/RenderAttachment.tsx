@@ -2,7 +2,12 @@ import { transformImageUrl } from "@/lib/features";
 import { FileOpen as FileOpenIcon } from "@mui/icons-material";
 import React from "react";
 
-const RenderAttachment = (fileType, url) => {
+interface RenderAttachmentProps {
+  fileType: string;
+  url: string;
+}
+
+const RenderAttachment = (fileType: RenderAttachmentProps['fileType'], url: RenderAttachmentProps['url']): React.ReactElement => {
   switch (fileType) {
     case "video":
       return (
