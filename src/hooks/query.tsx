@@ -223,7 +223,7 @@ const useGetChatDetailsQuery = ({ chatId, populate = true }: {
   };
 }
 
-const useGetMessagesQuery = ({ chatId, page }: {
+const useGetMessagesQuery = ({ chatId, page = 1 }: {
   chatId: string;
   page: number;
 }) => {
@@ -231,15 +231,17 @@ const useGetMessagesQuery = ({ chatId, page }: {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [refetch, setRefetch] = useState(false);
+  const [refetch, setRefetch] = useState(true);
 
-  const fetchMessages = async () => {
+  const fetchMessages = async (chatId: String) => {
     setIsLoading(true);
     try {
       const response = await axios.get(`/api/chat/getMessage/${chatId}`, {
         params: { page },
         withCredentials: true,
       });
+
+      console.log("Messages:", response);
 
       if (response.status === 200) {
         setData(response.data);
@@ -264,7 +266,7 @@ const useGetMessagesQuery = ({ chatId, page }: {
 
   useEffect(() => {
     if (refetch) {
-      fetchMessages();
+      fetchMessages(chatId);
       setRefetch(false);
     }
   }, [refetch])
