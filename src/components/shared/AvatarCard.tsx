@@ -8,7 +8,9 @@ interface AvatarCardProps {
 }
 
 const AvatarCard = ({ avatar, max = 3 }: AvatarCardProps) => {
+
   return (
+
     <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
       <AvatarGroup
         max={max}
@@ -19,11 +21,12 @@ const AvatarCard = ({ avatar, max = 3 }: AvatarCardProps) => {
       >
         <Box width={"5rem"} height={"3rem"} display="flex" alignItems="center">
           {avatar.map((src, index) => {
+            console.log(src);
             if (index >= max) return null;
             return (
               <Avatar
                 key={index}
-                src={transformImageUrl(src)}
+                src={src ? transformImageUrl(src) : ""}
                 alt={`Avatar ${index}`}
                 sx={{
                   width: "3rem",
