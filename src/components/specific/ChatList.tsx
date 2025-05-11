@@ -32,6 +32,8 @@ const ChatList = ({
   handleDeleteChat,
   newMessagesAlert = [],
 }: ChatListProps) => {
+
+
   return (
     <Stack
       height={"100%"}
