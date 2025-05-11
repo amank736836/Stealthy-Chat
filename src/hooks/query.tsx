@@ -9,7 +9,7 @@ const useGetMyChatsQuery = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [refetch, setRefetch] = useState(false);
+  const [refetch, setRefetch] = useState(true);
 
   const fetchChats = async () => {
     setIsLoading(true);
