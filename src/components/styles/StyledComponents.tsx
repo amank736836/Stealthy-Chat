@@ -1,6 +1,6 @@
 import { grayColor, matBlack } from "@/app/constants/color";
 import { keyframes, Skeleton, styled } from "@mui/material";
-import { Link as LinkComponent } from "react-router-dom";
+import { Link as LinkComponent } from "@mui/material";
 
 const VisuallyHiddenInput = styled("input")({
   border: "0",
@@ -14,19 +14,19 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const StyledLink = styled(LinkComponent)`
-  text-decoration: none;
-  color: #333;
-  padding: 0.5rem;
-  font-weight: bold;
-  border-radius: 8px;
-  transition: all 0.3s ease-in-out;
-  display: inline-block;
-  &:hover {
-    transform: scale(1.05);
-    background-color: rgba(0, 0, 0, 0.1);
+const StyledLink = styled(LinkComponent)({
+  textDecoration: "none",
+  color: "#333",
+  padding: "0.5rem",
+  fontWeight: "bold",
+  borderRadius: "8px",
+  transition: "all 0.3s ease-in-out",
+  display: "inline-block",
+  "&:hover": {
+    transform: "scale(1.05)",
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
   }
-`;
+});
 
 const InputBox = styled("input")({
   width: "100%",
