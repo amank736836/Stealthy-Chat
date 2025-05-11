@@ -4,7 +4,7 @@ import ChatItem from "../shared/ChatItem";
 
 interface Chat {
   _id: string;
-  avatar: string;
+  avatar: string[];
   name: string;
   groupChat: boolean;
   members?: string[];
@@ -69,7 +69,7 @@ const ChatList = ({
             index={index}
             newMessageCount={newMessageCount?.count || 0}
             isOnline={isOnline}
-            avatar={[avatar]}
+            avatar={avatar}
             name={name}
             _id={_id}
             key={_id}
