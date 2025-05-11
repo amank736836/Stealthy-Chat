@@ -25,8 +25,9 @@ const fileFormat = (url: string = ""): "video" | "audio" | "image" | "file" => {
   return "file";
 };
 
-const transformImageUrl = (url: string = "", width: number = 100): string =>
-  url.replace("upload", `upload/dpr_auto/w_${width}`);
+const transformImageUrl = (url: string = "", width: number = 100): string => {
+  return url.replace("upload", `upload/dpr_auto/w_${width}`);
+};
 
 const getLast7Days = (): string[] => {
   const days: string[] = [];
@@ -43,5 +44,7 @@ const getLast7Days = (): string[] => {
   return days;
 };
 
+const socket = io();
 
-export { fileFormat, getLast7Days, transformImageUrl };
+export { fileFormat, getLast7Days, socket, transformImageUrl };
+
