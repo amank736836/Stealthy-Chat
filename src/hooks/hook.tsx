@@ -41,27 +41,36 @@ type StorageOptions = {
   key: string;
   value?: NewMessageAlert[];
   fallbackValue?: NewMessageAlert[];
+  get: boolean;
 };
 
 const useGetOrSaveFromStorage = ({
   key,
-  value,
+  value = [],
   fallbackValue = [],
+  get = true,
 }: StorageOptions) => {
   const [item, setItem] = useState(fallbackValue);
-  useEffect(() => {
-    const stored = localStorage.getItem(key);
-    setItem(stored ? JSON.parse(stored) : fallbackValue);
-  }, [fallbackValue, key]);
+
 
   useEffect(() => {
+    const storedItem = localStorage.getItem(key);
+    if (storedItem) {
+      setItem(JSON.parse(storedItem));
+    }
+  }, [key]);
+
+
+  if (get) {
+    return item;
+  } else {
     localStorage.setItem(key, JSON.stringify(value));
-  }, [item, value]);
-
-  return {
-    item,
-    setItem,
+    setItem(value);
+    return item;
   }
+
+
+
 };
 
 export { useErrors, useGetOrSaveFromStorage };
