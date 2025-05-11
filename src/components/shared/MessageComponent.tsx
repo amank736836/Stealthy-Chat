@@ -5,8 +5,25 @@ import { motion } from "framer-motion";
 import { lightBlue } from "@/app/constants/color";
 import { fileFormat } from "@/lib/features";
 import RenderAttachment from "./RenderAttachment";
+import { User } from "@/backend/model/user.model";
 
-const MessageComponent = ({ message, user }) => {
+interface Sender {
+  _id: string;
+  name?: string;
+}
+
+interface Attachment {
+  url: string;
+}
+
+interface Message {
+  sender: Sender;
+  content?: string;
+  attachments?: Attachment[];
+  createdAt: Date | string;
+}
+
+const MessageComponent = ({ message, user }: { message: Message; user: Partial<User> }) => {
   const { sender, content, attachments = [], createdAt } = message;
 
   const isSender = sender._id === user._id;
@@ -34,9 +51,9 @@ const MessageComponent = ({ message, user }) => {
       )}
 
       {attachments.length > 0 &&
-        attachments.map((attachment, index) => {
-          const url = attachment.url;
-          const fileType = fileFormat(url);
+        attachments.map((attachment: { url: string }, index: number) => {
+          const url: string = attachment.url;
+          const fileType: string = fileFormat(url);
           return (
             <Box key={index}>
               <a
