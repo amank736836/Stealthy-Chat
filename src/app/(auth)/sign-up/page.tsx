@@ -16,7 +16,6 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
@@ -31,16 +30,8 @@ function SignUp({
     identifier: string;
   }>;
 }) {
-  const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (session && session.user) {
-      router.push("/dashboard");
-      return;
-    }
-  }, [session, router]);
 
   const [username, setUsername] = useState("");
   const [usernameMessage, setUsernameMessage] = useState("");
