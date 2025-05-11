@@ -5,7 +5,6 @@ import Header from "@/components/layout/Header";
 import { useErrors, useGetOrSaveFromStorage } from "@/hooks/hook";
 import { useGetMyChatsQuery } from "@/hooks/query";
 import { useToast } from "@/hooks/use-toast";
-import { socket } from "@/lib/features";
 import { incrementNotificationCount, setNewMessagesAlert } from "@/lib/store/chat.reducer";
 import { setIsDeleteMenu, setIsMobile, setSelectedDeleteChat } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
@@ -130,7 +129,7 @@ const AppLayout = ({
         [ONLINE_USERS]: onlineUsersListener,
     };
 
-    useSocketEvents(socket, eventHandlers);
+    // useSocketEvents(socket, eventHandlers);
 
     const {
         item: newMessagesAlertStorage,
@@ -146,11 +145,11 @@ const AppLayout = ({
         }
     }, [newMessagesAlert]);
 
-    useEffect(() => {
-        if (session?.user) {
-            socket.emit("USER_", session.user.id);
-        }
-    }, [session]);
+    // useEffect(() => {
+    //     if (session?.user) {
+    //         socket.emit("USER_", session.user.id);
+    //     }
+    // }, [session]);
 
     return (
         <>
