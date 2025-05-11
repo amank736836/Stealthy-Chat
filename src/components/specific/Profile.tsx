@@ -1,7 +1,7 @@
 import { gradientBg } from "@/app/constants/color";
+import { User } from "@/backend/model/user.model";
 import { useToast } from "@/hooks/use-toast";
 import { transformImageUrl } from "@/lib/features";
-import { RootState } from "@/lib/store/store";
 import {
   CalendarMonth as CalendarIcon,
   Email as EmailIcon,
@@ -13,28 +13,45 @@ import { Avatar, Box, Stack, Switch, Typography } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 
 const Profile = () => {
 
   const { data: session } = useSession();
-
-  console.log("Session:", session);
-
   const { toast } = useToast();
+  const [baseUrl, setBaseUrl] = useState<string>("");
+  const [user, setUser] = useState<Partial<User>>({
+    id: "",
+    name: "",
+    username: "",
+    email: "",
+    avatar: {
+      url: "",
+      public_id: "",
+    },
+    createdAt: new Date(),
+    isAcceptingMessage: false,
+  })
 
-  const route = useRouter();
+  useEffect(() => {
+    const url = window.location.href;
+    const baseUrl = url.split("/").slice(0, 3).join("/");
+    setBaseUrl(baseUrl);
 
-  if (!session?.user) {
-    route.push("/login");
-    return null;
-  }
+    if (session) {
+      setUser({
+        ...session.user,
+        createdAt: new Date(session.user.createdAt),
+        updatedAt: new Date(session.user.updatedAt)
+      });
+    }
 
-  const baseUrl = `${window.location.origin}`;
-  const profileUrl = `${baseUrl}/u/${session.user.username}`;
+  }, [session]);
+
+  useEffect(() => { }, [session]);
+
+  const profileUrl = `${baseUrl}/u/${session?.user.username}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);
@@ -44,12 +61,12 @@ const Profile = () => {
     })
   };
 
-  const [isAcceptingMessages, setIsAcceptingMessages] = useState(
-    session.user.isAcceptingMessages || false
+  const [isAcceptingMessage, setIsAcceptingMessage] = useState(
+    session?.user.isAcceptingMessage || false
   );
 
   const handleAcceptMessages = async () => {
-    setIsAcceptingMessages((prev: boolean) => !prev);
+    setIsAcceptingMessage((prev: boolean) => !prev);
     const toastId = toast({
       title: "Updating...",
       description: "Please wait...",
@@ -60,7 +77,7 @@ const Profile = () => {
       const response = await axios.post(
         `/user/acceptMessages`,
         {
-          isAcceptingMessages: !isAcceptingMessages,
+          isAcceptingMessages: !isAcceptingMessage,
         },
         {
           withCredentials: true,
@@ -73,7 +90,7 @@ const Profile = () => {
           description: response.data.message,
           duration: 1000,
         })
-        setIsAcceptingMessages(!isAcceptingMessages);
+        setIsAcceptingMessage(!isAcceptingMessage);
       } else {
         toast({
           title: "Failed to update",
@@ -122,7 +139,7 @@ const Profile = () => {
             border: "5px solid white",
             boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
           }}
-          src={transformImageUrl(session.user.avatar.url)}
+          src={transformImageUrl(session?.user?.avatar?.url || "")}
           alt="Profile Avatar"
         />
         <Stack
@@ -145,24 +162,24 @@ const Profile = () => {
               Accept Anonymous Messages
             </Typography>
             <Typography color="gray" variant="caption">
-              {isAcceptingMessages}
+              {isAcceptingMessage}
             </Typography>
           </Stack>
-          <Switch checked={isAcceptingMessages} color="primary" size="medium" />
+          <Switch checked={isAcceptingMessage} color="primary" size="medium" />
         </Stack>
-        <ProfileCard heading="Name" text={session.user.name} Icon={<FaceIcon />} />
+        <ProfileCard heading="Name" text={session?.user.name || ""} Icon={<FaceIcon />} />
         <ProfileCard
           heading="Username"
-          text={session.user.username}
+          text={session?.user.username || ""}
           Icon={<UsernameIcon />}
         />
-        <ProfileCard heading="Email" text={session.user.email} Icon={<EmailIcon />} />
+        <ProfileCard heading="Email" text={session?.user.email || ""} Icon={<EmailIcon />} />
         <ProfileCard
           heading="Joining Days"
-          text={moment(session.user.createdAt).fromNow(true)}
+          text={moment(session?.user.createdAt).fromNow(true)}
           Icon={<CalendarIcon />}
         />
-        {isAcceptingMessages && (
+        {isAcceptingMessage && (
           <ProfileCard
             heading="Profile URL"
             text={profileUrl}
