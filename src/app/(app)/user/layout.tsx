@@ -60,6 +60,8 @@ const AppLayout = ({
         refetch: refetchChats,
     } = useGetMyChatsQuery();
 
+    console.log("chatsData", chatsData);
+
 
     useErrors([{
         isError: isErrorChats,
