@@ -1,5 +1,7 @@
+import NewGroupDialog from "@/components/dialog/NewGroupDialog";
+import NotificationsDialog from "@/components/dialog/NotificationsDialog";
+import SearchDialog from "@/components/dialog/SearchDialog";
 import { useToast } from "@/hooks/use-toast";
-import { userNotExists } from "@/lib/store/auth.reducer";
 import { resetNotificationCount } from "@/lib/store/chat.reducer";
 import { setIsMobile, setIsNewGroup, setIsNotification, setIsSearch } from "@/lib/store/misc.reducer";
 import { RootState } from "@/lib/store/store";
@@ -22,7 +24,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import axios, { AxiosError } from "axios";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,7 +38,7 @@ const Header = () => {
     (state: RootState) => state.misc
   );
 
-  const { notificationCount } = useSelector((state) => state.chat);
+  const { notificationCount } = useSelector((state: RootState) => state.chat);
 
   const openMobile = () => {
     dispatch(setIsMobile(true));
@@ -56,39 +58,16 @@ const Header = () => {
   };
 
   const logoutHandler = async () => {
-    let toastId = toast({
-      title: "Logging out...",
-      description: "Please wait...",
+    signOut();
+    router.push(`/sign-in`);
+
+    toast({
+      title: "Logged out successfully!",
+      description: "See you next time!",
       variant: "default",
       duration: 1000,
     })
-
-    try {
-      const { data } = await axios.get(`/user/logout`, {
-        withCredentials: true,
-      });
-
-      dispatch(userNotExists());
-
-      toast({
-        title: "Logged out successfully!",
-        description: data.message,
-        variant: "default",
-        duration: 1000,
-      })
-    } catch (error) {
-      console.error(error);
-
-      const axiosError = error as AxiosError<{ message: string }>;
-
-      toast({
-        title: "Error",
-        description: axiosError?.response?.data?.message || "Something went wrong!",
-        variant: "destructive",
-        duration: 2000,
-      })
-    }
-  };
+  }
 
   return (
     <>
@@ -110,7 +89,7 @@ const Header = () => {
               transition: "color 0.3s",
               "&:hover": { color: "#FFDA79" },
             }}
-            onClick={() => router.push("/home")}
+            onClick={() => router.push("/user/home")}
           >
             Chat App
           </Typography>
@@ -143,7 +122,7 @@ const Header = () => {
             />
             <IconBtn
               title="Manage Groups"
-              onClick={() => navigate("/groups")}
+              onClick={() => router.push("/groups")}
               icon={<GroupIcon />}
             />
             <IconBtn
@@ -175,9 +154,14 @@ const Header = () => {
       )}
     </>
   );
-};
+}
 
-const IconBtn = ({ title, onClick, icon, value }) => {
+const IconBtn = ({ title, onClick, icon, value = "" }: {
+  title: string;
+  onClick: () => void;
+  icon: React.ReactNode;
+  value?: number | string;
+}) => {
   return (
     <Tooltip title={title} arrow>
       <IconButton
