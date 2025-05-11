@@ -27,6 +27,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
   index = 0,
   handleDeleteChat,
 }) => {
+
   return (
     <StyledLink
       sx={{
