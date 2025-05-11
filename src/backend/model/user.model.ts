@@ -10,10 +10,12 @@ export interface User extends Document {
   email: string;
   password: string;
   isAcceptingMessage: boolean;
+  isVerified: boolean;
   verifyCode: number;
   verifyCodeExpiry: Date;
-  isVerified: boolean;
   isAdmin: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const UserSchema: Schema<User> = new Schema(
