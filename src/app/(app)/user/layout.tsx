@@ -134,7 +134,9 @@ const AppLayout = ({
         [ONLINE_USERS]: onlineUsersListener,
     };
 
-    useSocketEvents(socket, eventHandlers);
+    if (socket) {
+        useSocketEvents(socket, eventHandlers);
+    }
 
     useEffect(() => {
         useGetOrSaveFromStorage({
