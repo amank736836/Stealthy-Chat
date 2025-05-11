@@ -1,6 +1,6 @@
 import { sendVerificationEmail } from "@/backend/helpers/sendVerificationEmail";
 import dbConnect from "@/backend/lib/dbConnect";
-import UserModel from "@/backend/model/user.model";
+import UserModel, { User } from "@/backend/model/user.model";
 import bcrypt from "bcryptjs";
 import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
@@ -42,7 +42,7 @@ const authOptions: NextAuthConfig = {
 
         await dbConnect();
         try {
-          const user = await UserModel.findOne({
+          const user: User = await UserModel.findOne({
             $or: [
               { email: credentials.identifier },
               { username: credentials.identifier },
@@ -103,14 +103,7 @@ const authOptions: NextAuthConfig = {
             throw new Error("Invalid password");
           }
 
-          return {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            avatar: user.avatar,
-            isVerified: user.isVerified,
-            isAcceptingMessages: user.isAcceptingMessage,
-          };
+          return user;
         } catch (error) {
           throw new Error(`Error in authorize: ${error}`);
         }
@@ -120,22 +113,35 @@ const authOptions: NextAuthConfig = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.isAcceptingMessage = user.isAcceptingMessage;
+        token.isVerified = user.isVerified;
+        token.isAdmin = user.isAdmin;
         token._id = user._id.toString();
+        token.name = user.name;
         token.username = user.username;
         token.email = user.email;
         token.avatar = user.avatar;
-        token.isVerified = user.isVerified;
-        token.isAcceptingMessages = user.isAcceptingMessages;
+        token.createdAt = user.createdAt;
+        token.updatedAt = user.updatedAt;
       }
 
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user._id = token._id as string;
+        session.user.isAcceptingMessage = token.isAcceptingMessage as boolean;
         session.user.isVerified = token.isVerified as boolean;
-        session.user.isAcceptingMessages = token.isAcceptingMessages as boolean;
+        session.user.isAdmin = token.isAdmin as boolean;
+        session.user._id = token._id as string;
+        session.user.name = token.name as string;
         session.user.username = token.username as string;
+        session.user.email = token.email as string;
+        session.user.avatar = token.avatar as {
+          public_id: string;
+          url: string;
+        };
+        session.user.createdAt = token.createdAt as string;
+        session.user.updatedAt = token.updatedAt as string;
       }
       return session;
     },
