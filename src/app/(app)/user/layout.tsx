@@ -1,8 +1,8 @@
 "use client";
 import { useSocketEvents } from "6pp";
-import DeleteChatMenu from "@/components/dialog/DeleteChatMenu";
+import DeleteChatMenu from "@/components/Menus/DeleteChatMenu";
 import Header from "@/components/layout/Header";
-import { useGetOrSaveFromStorage } from "@/hooks/hook";
+import { useErrors, useGetOrSaveFromStorage } from "@/hooks/hook";
 import { useGetMyChatsQuery } from "@/hooks/query";
 import { useToast } from "@/hooks/use-toast";
 import { socket } from "@/lib/features";
@@ -46,6 +46,7 @@ const AppLayout = ({
     };
 
     const params = useParams();
+
     const chatId: string = Array.isArray(params.chatId)
         ? params.chatId[0] || ""
         : params.chatId || "";
@@ -60,18 +61,11 @@ const AppLayout = ({
         refetch: refetchChats,
     } = useGetMyChatsQuery();
 
-    useEffect(() => {
-        if (isErrorChats) {
-            toast({
-                title: "Error",
-                description: errorChats,
-                variant: "destructive",
-                duration: 2000,
-            });
-        }
 
-    }, [isErrorChats, errorChats, toast]);
-
+    useErrors([{
+        isError: isErrorChats,
+        error: errorChats,
+    }]);
 
     const handleDeleteChat = (
         e: React.MouseEvent<HTMLElement>,
@@ -113,7 +107,7 @@ const AppLayout = ({
                 });
             }
             refetchChats();
-            router.push("/home");
+            router.push("/user/home");
         },
         [refetchChats, router]
     );
@@ -154,7 +148,7 @@ const AppLayout = ({
 
     useEffect(() => {
         if (session?.user) {
-            socket.emit("USER_CONNECTED", session.user.id);
+            socket.emit("USER_", session.user.id);
         }
     }, [session]);
 
