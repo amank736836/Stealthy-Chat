@@ -50,7 +50,9 @@ const LayoutLoader = () => {
   );
 };
 
-const TypingLoader = ({ username }) => {
+const TypingLoader = ({ username }: {
+  username: string;
+}) => {
   return (
     <Stack
       spacing={"0.5rem"}
